@@ -14,6 +14,7 @@ ol, ul {
 
 p {
   margin:1em 0;
+  font-size:1.25em;
   text-indent:1em;
 }
 
@@ -32,31 +33,39 @@ p span {
   border-radius:0.25em;
   padding:0 0.25em;
 }
-.album {
+.timestamp {
+  display:none;
+}
+body.highlighted .timestamp {
+  color:green;
+  display:inline;
+}
+
+body.highlighted .album {
   background-color:rgba(255,0,0,0.3);
 }
-.artist {
+body.highlighted .artist {
   background-color:rgba(255,0,255,0.3);
 }
-.name {
+body.highlighted .name {
   background-color:rgba(0,255,0,0.3);
 }
-.era {
+body.highlighted .era {
   background-color:rgba(255,255,0,0.3);
 }
-.label {
+body.highlighted .label {
   background-color:rgba(0,0,255,0.3);
 }
-.track {
+body.highlighted .track {
   background-color:rgba(0,255,255,0.3);
 }
-.genre {
+body.highlighted .genre {
   background-color:rgba(0,0,0,0.3);
 }
-.place {
+body.highlighted .place {
   background-color:rgba(130,3,110,0.3);
 }
-.tag {
+body.highlighted .tag {
   border:1px solid #25B3D3;
 }
 

@@ -44,8 +44,9 @@ bootstrap.add(function () {
   bg = 'transparent url(data:image/svg+xml;base64,'+bg+') repeat 0 1px' ;
   
   notepad.style.background = bg;
-
-  findMetadata(document.getElementById('selection').value);
+  var textarea = document.getElementById('selection');
+  textarea.focus();
+  findMetadata(textarea.value);
   
   var wheight = window.getSize().y;
   document.id('notebook').setStyle('height',  wheight - 250);
@@ -81,7 +82,6 @@ var tagger = new Class({
     var re = new RegExp("^("+this.tags.join('|')+")|[\[]", "g");
     matches = text.match(re);
     if (matches) {
-      console.log(matches)
       return matches[0] + ' is a reserved keyword';
     } else if (text.length >= 50) {
       // the longest band names I could find with a quick good were between 42-45

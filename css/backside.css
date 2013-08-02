@@ -12,6 +12,14 @@ hr {
   border-bottom-width:1px;
 }
 
+button {
+  background-color:#fff;
+  border-radius:1em;
+  padding:0.25em 0.5em;
+  color:#333 !important;
+  cursor:pointer;
+  margin:0.125em;
+}
 ol, ul {
   padding-left:3em;
 }

@@ -19,6 +19,10 @@ function encode(string, prefix) {
 
 self.addEventListener('message', function(e) {
   var message = e.data;
+  message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
+          var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
+          return '<em style="color:green">(@'+seconds+' seconds in)</em>';
+        });
   var markdown = '';
   var tags = [];
   markdown += marked(message.replace(/(genre|era|place|album|artist|label|name|tag|track)\[([^[]*)\]/g, function (match, type, tag) {

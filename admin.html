@@ -29,7 +29,7 @@
       <p><em id="statistics">Statistics</em></p>
     </div>
     <div class="_3 column">
-      <p><em id="timestamp">Preview</em></p>
+      <p><em id="timestamp">Preview</em> <button onclick="var p = document.getElementById('preview').contentDocument.body; if (p.className == 'highlighted') {p.className = ''; this.textContent = 'Show Highlighting';} else {p.className = 'highlighted'; this.textContent = 'No Highlighting'} return false;">No Highlighting</button></p>
     </div>
   </section>
   <section class="container">
@@ -52,7 +52,7 @@
       <hr style="border:none;border-bottom:1px solid #ddd;margin:1em 0"/>
     </div>
     <div id="notebook" class="_5 column">
-      <textarea id="selection" spellcheck="false">Guitarist and artist[Ohio Players] frontman name[Leroy &#x201C;Sugarfoot&#x201D; Bonner] died of undisclosed causes this week at the age of 69. The group&#x2019;s string of era[&#x2018;70s] albums for label[Westbound] and label[Mercury Records], driven by Bonner&#x2019;s lead vocals and electrifying double-neck guitar work, stands as one of the most impressive runs in funk history. Their distinct sound found new life in the in the late era[&#x2018;80s] and era[&#x2018;90s] as countless genre[hip hop] artists sampled the group&#x2019;s work (a artist[Red Hot Chili Peppers] cover of &#x201C;track[Love Rollercoaster]&#x201D; on the soundtrack for album[Beavis and Butthead Do America]1 didn&#x2019;t hurt either). Greg highlights &#x201C;Skin Tight&#x201D; as prime example of Bonner&#x2019;s musical legacy.
+      <textarea id="selection" class="editing" spellcheck="false">Guitarist and artist[Ohio Players] frontman name[Leroy &#x201C;Sugarfoot&#x201D; Bonner] died of undisclosed causes this week at the age of 69. The group&#x2019;s string of era[&#x2018;70s] albums for label[Westbound] and label[Mercury Records], driven by Bonner&#x2019;s lead vocals and electrifying double-neck guitar work, stands as one of the most impressive runs in funk history. Their distinct sound found new life in the in the late era[&#x2018;80s] and era[&#x2018;90s] as countless genre[hip hop] artists sampled the group&#x2019;s work (a artist[Red Hot Chili Peppers] cover of &#x201C;track[Love Rollercoaster]&#x201D; on the soundtrack for album[Beavis and Butthead Do America]1 didn&#x2019;t hurt either). Greg highlights &#x201C;Skin Tight&#x201D; as prime example of Bonner&#x2019;s musical legacy.
 
 This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexposed bands], stops by the tag[Sound Opinions studio] for an interview and a brief live set. The group came together in era[1978] as part of place[New York City]&#x2019;s genre[punk] and genre[new wave] scene, and put out two classic, but minimally distributed albums before singer/guitarist name[Chris Stamey] left the group. Two more low profile records followed before the group tag[broke up]1 in era[1988]. Now the original dB&#x2019;s lineup is back with a tag[new album], album[Falling Off the Sky]. Jim used to frequently go see this band live in their earliest days, and it&#x2019;s clear that they haven&#x2019;t lost a step in their few decades off. During their visit, the band rips through three songs from album[Falling Off the Sky], and Stamey and co-frontman name[Peter Holsapple] talk with Jim and Greg about their early days in place[North Carolina], their label woes in the era[&#x2018;80s], and their decision to reunite not for a paycheck, but just because they were itching to play again. After you hear their interview, check out these two bonus performances: &#x201C;track[Happenstance]&#x201D; and &#x201C;track[Neverland],&#x201D; both from their best ever.</textarea>
     </div>
@@ -110,12 +110,11 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
       console.log('will replace: ' + selected);
       
       var stopIdx  = this.value.length - this.selectionEnd;
-      console.log(startIdx, stopIdx);
+      
       // console.log('{'.charCodeAt(0), '}'.charCodeAt(0), String.fromCharCode(92));
       var re = new RegExp("([^]{"+(startIdx)+"})("+selected+")([^]{"+stopIdx+"})","m");
-      console.log(re.multiline);
       if (re) {
-        console.log(re);
+
         this.value = this.value.replace(re, '$1REPLACE_ME[$2]$3');
       } else {
         alert('this is an invalid expression');
@@ -125,13 +124,19 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
     }
   });
   var count = 0;
-  
+  window.buffer = '';
+  var commands = ['tag', 'bold', 'italic', 'link', 'image'];
+  var categories = ['genre','era','place','album','artist','label','name','tag','track'];
   selects_cursor.addEventListener('keydown', function (evt) {
-    if (evt.keyCode > 15) return;
-    if (evt.keyCode == 9 || (evt.keyCode == 13 && this.selectionStart != this.selectionEnd)) {
+    var key = evt.keyCode;
+
+    if (key == 9 || (key == 13 && this.selectionStart != this.selectionEnd)) {
       evt.preventDefault();
+      return;
     }
-  })
+
+    window.buffer = key < 65 || key > 90 ? '' : window.buffer + String.fromCharCode(key);
+  });
   
   selects_cursor.addEventListener('keyup', function (evt) {
     var startCursor = this.selectionStart;
@@ -149,6 +154,31 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
         this.setSelectionRange(startCursor, endCursor);
         break;
       case 9:
+        // tab key
+        // is there a command in the buffer?
+        var cmd = window.buffer.toLowerCase();
+        if (commands.contains(cmd)) {
+          console.log('Executing the ', window.buffer, ' command');
+          // we need to know the next character, to do some better matching. ie
+          // tag(tab)someword should produce tag|artist|album|etc|something[someword], and you tab through the results
+          if (cmd == 'tag') {
+
+            if (categories.contains(this.value.substring(this.selectionStart, this.selectionEnd))) {
+              console.log('cycle through commands, hit enter when done.');
+            } else {
+              var startCursor = startCursor - cmd.length;
+              var endCursor = this.selectionEnd;
+              var selected = this.value.substring(startCursor, endCursor);
+              var endIdx  = this.value.length - endCursor;
+              var re = new RegExp("([^]{"+(startCursor)+"})("+cmd+")([^]{"+endIdx+"})", 'm');
+              this.value = this.value.replace(re, "$1artist$3");
+        
+              this.setSelectionRange(startCursor, endCursor + 'artist'.length - 3);
+            }
+            
+          }
+          
+        }
         var next = this.value.substr(this.selectionStart, 1);
         if (next === ']') {
           this.setSelectionRange(startCursor+1, startCursor+1);
@@ -157,8 +187,8 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
           
         }
         break;
-      // enter key
       case 13:
+        // enter key, will be tricky
         if (this.selectionStart != this.selectionEnd) {
           var endCursor = this.selectionEnd;
           var selected = this.value.substring(startCursor, endCursor);
