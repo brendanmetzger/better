@@ -75,6 +75,10 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
       editor.addEvent('textInput', function () {
         findMetadata(this.cursor.getText());
       });
+      
+      editor.macro.addEvent('enter', function() {
+        console.log('perform enter stuff');
+      });
     });
 
     var selects_cursor = document.getElementById('selection');
@@ -111,8 +115,8 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
   });
 
   window.buffer = '';
-  var commands = ['tag', 'bold', 'italic', 'link', 'image'];
-  var categories = ['genre','era','place','album','artist','label','name','tag','track'];
+  var commands   = ['tag', 'bold', 'italic', 'link', 'image'];
+
   
   
   selects_cursor.addEventListener('keyup', function (evt) {
@@ -129,40 +133,6 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
         var re = new RegExp("([^]{"+startCursor+"})([^]*)", 'm');
         this.value = this.value.replace(re, "$1REPLACE]$2");
         this.setSelectionRange(startCursor, endCursor);
-        break;
-      case 9:
-        // tab key
-        // is there a command in the buffer?
-        var cmd = window.buffer.toLowerCase();
-        if (commands.contains(cmd)) {
-          console.log('Executing the ', window.buffer, ' command');
-          // we need to know the next character, to do some better matching. ie
-          // tag(tab)someword should produce tag|artist|album|etc|something[someword], and you tab through the results
-          if (cmd == 'tag') {
-
-            if (categories.contains(this.value.substring(this.selectionStart, this.selectionEnd))) {
-              console.log('cycle through commands, hit enter when done.');
-            } else {
-              var startCursor = startCursor - cmd.length;
-              var endCursor = this.selectionEnd;
-              var selected = this.value.substring(startCursor, endCursor);
-              var endIdx  = this.value.length - endCursor;
-              var re = new RegExp("([^]{"+(startCursor)+"})("+cmd+")([^]{"+endIdx+"})", 'm');
-              this.value = this.value.replace(re, "$1artist$3");
-        
-              this.setSelectionRange(startCursor, endCursor + 'artist'.length - 3);
-            }
-            
-          }
-          
-        }
-        var next = this.value.substr(this.selectionStart, 1);
-        if (next === ']') {
-          this.setSelectionRange(startCursor+1, startCursor+1);
-        } else if (next === '[') {
-          console.log('skip entire block');
-          
-        }
         break;
       case 13:
         // enter key, will be tricky

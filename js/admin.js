@@ -114,6 +114,9 @@ Ed.cursor = new Class({
     // if range included, will be a find/replace operation
     this.field.value = text;
   },
+  replace: function (re, string){
+    
+  }
   // moveCursor
   // cursorPosition
 });
@@ -155,7 +158,7 @@ Ed.trigger = new Class({
   Implements: Events,
   commands: {
     tab: ['tag', 'bold', 'italic', 'link', 'image'],
-    enter : []
+    enter : ['%']
   },
   codes: [],
   trigger: null,
@@ -170,21 +173,49 @@ Ed.trigger = new Class({
     this.trigger = this.codes[key];
     if (this.trigger) {
       var buf = this.buffer.getLastWord().toLowerCase();
-      console.log(buf);
-      if (this.commands[this.trigger].contains(buf)) {
-        
+      if (this.commands[this.trigger].contains(buf)) {        
         this[this.trigger].call(this.cursor, buf);
         this.fireEvent(buf);
+      } else {
+        this[this.trigger].call(this.cursor, buf);
+        this.fireEvent(this.trigger);
       }
+      
     } 
   },
-  tab: function (buf){
-    console.log(this, buf);
+  tab: function (cmd){
+    console.log(this, cmd);
+      // we need to know the next character, to do some better matching. ie
+      // tag(tab)someword should produce tag|artist|album|etc|something[someword], and you tab through the results
+    if (cmd == 'tag') {
+      var categories = ['genre','era','place','album','artist','label','name','tag','track'];
+      var text = this.getSelectedText();
+      if (categories.contains(text)) {
+        console.log('cycle through commands, hit enter when done.');
+      } else {
+        var startCursor = this.start - cmd.length;
+        var endCursor = this.end;
+        var endIdx  = this.getText().length - endCursor;
+        var re = new RegExp("([^]{"+(startCursor)+"})("+cmd+")([^]{"+endIdx+"})", 'm');
+        
+        this.setText(this.getText().replace(re, "$1artist$3"));
+  
+        this.field.setSelectionRange(startCursor, endCursor + 'artist'.length - 3);
+      }
+      
+    }
+    
+    var next = this.getText().substr(this.selectionStart, 1);
+    if (next === ']') {
+      this.setSelectionRange(startCursor+1, startCursor+1);
+    } else if (next === '[') {
+      console.log('skip entire block');
+    }
   },
   enter: function (buf){
     console.log(this, buf);
   },
-  bracket: function (){
+  bracket: function (buf){
     console.log(this, buf);
   }
 });
