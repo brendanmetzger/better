@@ -63,6 +63,132 @@ function gcd(a, b) {
   }
 }
 
+var Ed = window.Ed || {};
+
+
+
+// has an event interface
+Ed.buffer = new Class({
+  Implements: Events,
+  // onBufferEmpty
+  // getBuffer
+  // setBuffer
+  stack: null,
+  last: null,
+  size: 50,
+  initialize: function () {
+    this.stack = new Array();
+  },
+  record: function (key){
+    this.last = key;
+    this.stack.push(key);
+    if (this.stack.length > this.size) {
+      this.stack.shift();
+    }
+  },
+  play: function (callback){
+    this.stack.each(callback)
+  },
+  getLastWord: function (){
+    return this.stack.map(function (key) {
+      return String.fromCharCode(key);
+    }).join('').split(/\b/i).pop();
+  }
+});
+
+Ed.cursor = new Class({
+  start:null,
+  end: null,
+  initialize: function (field){
+    this.field = field;
+  },
+  getText: function () {
+    return this.field.value;
+  },
+  getSelectedText: function (){
+    this.start = this.field.selectionStart;
+    this.end   = this.field.selectionEnd;
+    return this.getText().substring(this.start, this.end) || false;
+  },
+  setText: function (text, range){
+    // if range included, will be a find/replace operation
+    this.field.value = text;
+  },
+  // moveCursor
+  // cursorPosition
+});
+
+Ed.it = new Class({
+  Implements: Events,
+  input: null,
+  initialize: function (textarea) {
+    this.field = document.id(textarea);
+    this.cursor = new Ed.cursor(this.field);
+    this.buffer = new Ed.buffer;
+    this.macro  = new Ed.trigger(this.cursor, this.buffer);
+    
+    this.field.addEventListener('select', function (evt) {
+      this.fireEvent('textSelect');
+    }.bind(this), false);
+    
+    this.field.addEventListener('keydown', function (evt) {
+      var key = evt.keyCode;
+      if (key == 9 || (key == 13 && this.cursor.getSelectedText())) {
+        evt.preventDefault();
+        return;
+      }
+      this.buffer.record(key);
+    }.bind(this), false);
+    
+    this.field.addEventListener('keyup', function (evt) {
+      this.macro.parse(evt.keyCode);
+      this.fireEvent('textInput');
+      
+    }.bind(this), false);
+  }
+
+  // find
+  // replace
+});
+
+Ed.trigger = new Class({
+  Implements: Events,
+  commands: {
+    tab: ['tag', 'bold', 'italic', 'link', 'image'],
+    enter : []
+  },
+  codes: [],
+  trigger: null,
+  initialize: function (cursor, buffer){
+    this.cursor = cursor;
+    this.buffer = buffer;
+    this.codes[9]   = 'tab';
+    this.codes[13]  = 'enter'
+    this.codes[219] = 'bracket';
+  },
+  parse: function (key){
+    this.trigger = this.codes[key];
+    if (this.trigger) {
+      var buf = this.buffer.getLastWord().toLowerCase();
+      console.log(buf);
+      if (this.commands[this.trigger].contains(buf)) {
+        
+        this[this.trigger].call(this.cursor, buf);
+        this.fireEvent(buf);
+      }
+    } 
+  },
+  tab: function (buf){
+    console.log(this, buf);
+  },
+  enter: function (buf){
+    console.log(this, buf);
+  },
+  bracket: function (){
+    console.log(this, buf);
+  }
+});
+
 var tagger = new Class({
   container: null,
   tags: ['genre','era','place','album','artist','label','name','tag','track'],
@@ -92,3 +218,21 @@ var tagger = new Class({
 })
 
 
+
+var graph = {
+  genre:{},
+  era:{},
+  place:{},
+  album:{},
+  artist:{},
+  label:{},
+  name:{},
+  tag:{},
+  track:{}
+};
+
+graph.track['atv'] = new Array();
+graph.album['bam'] = new Array();
+
+graph.track['atv'].push('bam');
+graph.album['bam'].push('atv');

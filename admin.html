@@ -66,37 +66,23 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
     
     bootstrap.add(function () {
       window.tagger = new tagger('tagger');
+      var editor = new Ed.it('selection');
+      
+      editor.addEvent('textSelect', function (evt) {
+        window.tagger.addTag(this.cursor.getSelectedText());
+      })
+      
+      editor.addEvent('textInput', function () {
+        findMetadata(this.cursor.getText());
+      });
     });
 
     var selects_cursor = document.getElementById('selection');
 
     
     
-  selects_cursor.addEventListener('select', function (evt) {
-    var selected = this.value.substring(this.selectionStart, this.selectionEnd);
-    window.tagger.addTag(selected, this.selectionStart, this.selectionEnd);
-  }, false);
-  
-  var graph = {
-    genre:{},
-    era:{},
-    place:{},
-    album:{},
-    artist:{},
-    label:{},
-    name:{},
-    tag:{},
-    track:{}
-  };
-
-  graph.track['atv'] = new Array();
-  graph.album['bam'] = new Array();
-  
-  graph.track['atv'].push('bam');
-  graph.album['bam'].push('atv');
   
   
-
   
   selects_cursor.addEventListener('mouseup', function (evt) {
     if(evt.metaKey || evt.altKey) {
@@ -123,20 +109,11 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
       findMetadata(this.value); 
     }
   });
-  var count = 0;
+
   window.buffer = '';
   var commands = ['tag', 'bold', 'italic', 'link', 'image'];
   var categories = ['genre','era','place','album','artist','label','name','tag','track'];
-  selects_cursor.addEventListener('keydown', function (evt) {
-    var key = evt.keyCode;
-
-    if (key == 9 || (key == 13 && this.selectionStart != this.selectionEnd)) {
-      evt.preventDefault();
-      return;
-    }
-
-    window.buffer = key < 65 || key > 90 ? '' : window.buffer + String.fromCharCode(key);
-  });
+  
   
   selects_cursor.addEventListener('keyup', function (evt) {
     var startCursor = this.selectionStart;
@@ -197,12 +174,10 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
           this.value = this.value.replace(re, "$1 REPLACE_ME[$2]$3");
         
           this.setSelectionRange(startCursor + 1, endCursor+11 - selected.length);
-          console.log('perform a command!');
         }
         break;
     }
 
-    findMetadata(this.value);
   });
   
   function findMetadata(value) {
