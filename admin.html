@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" version="XHTML+RDFa 1.0" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>View</title>
+    <link rel="stylesheet" href="css/backside.css" type="text/css" media="screen" charset="utf-8"/>
+    <script type="text/javascript" charset="utf-8">
+    // <![CDATA[
+    window.bootstrap = (function() {
+      var components = [], scripts = [];
+      return { 
+        add: function(fun) {components.unshift(fun);},
+        tag: function (src) {var s = document.createElement('script'); s.type = 'text/javascript'; s.src = src;return s;},
+        queue: function(){for (var i=0; i < arguments.length; i++) {var s = this.tag(arguments[i]); s.onload = this.load; scripts.push(s);}; return this;},
+        load: function(){ if (scripts.length > 0) {document.body.appendChild(scripts.shift()); } else { window.bootstrap.init(); } },
+        init: function() {components.forEach(function(component) { if (typeof component != 'function') return; component.call(); }); }
+    };})();
+    bootstrap.queue('js/mootools-core.js', 'js/mootools-more.js', 'js/admin.js');
+    window.onload = window.bootstrap.load;
+    // ]]>
+  </script>
+  </head>
+  <body>
+  <section id="toolbar" class="container">
+    <div class="_2 column">
+      <p>Welcome, User</p>
+    </div>
+    <div class="_5 column">
+      <p><em id="statistics">Statistics</em></p>
+    </div>
+    <div class="_3 column">
+      <p><em id="timestamp">Preview</em></p>
+    </div>
+  </section>
+  <section class="container">
+    <div class="_2 column">
+      <details id="help">
+        <summary>Help &amp; Guides</summary>
+        <dl>
+          <dt>What are tags for?</dt>
+          <dd>Tags are the brain of this operation. In a nutshell, there is copy, some very minimal styling, and heavy tag-age. That said, tags should be significant across episodes and even within an article. For example, 'guitarist' is a good tag because it could be related to another <strong>catagorical tag</strong> such as name[somebody] which will give the query engine lots more to work with.</dd>
+          <dt>What is a categorical tag?</dt>
+          <dd>categorical tags are prefixed with something other than tag[whatever]; ie artist[whatever], place[whatever], or</dd>
+          <dt>What are the tag rules</dt>
+          <dd>Tag <em>keywords</em> should be lowercase, always. They have the format <strong>keyword[</strong>Some Text<strong>]</strong></dd>
+        </dl>
+      </details>
+
+      <div id="tagger">
+        
+      </div>
+      <hr style="border:none;border-bottom:1px solid #ddd;margin:1em 0"/>
+    </div>
+    <div id="notebook" class="_5 column">
+      <textarea id="selection" spellcheck="false">Guitarist and artist[Ohio Players] frontman name[Leroy &#x201C;Sugarfoot&#x201D; Bonner] died of undisclosed causes this week at the age of 69. The group&#x2019;s string of era[&#x2018;70s] albums for label[Westbound] and label[Mercury Records], driven by Bonner&#x2019;s lead vocals and electrifying double-neck guitar work, stands as one of the most impressive runs in funk history. Their distinct sound found new life in the in the late era[&#x2018;80s] and era[&#x2018;90s] as countless genre[hip hop] artists sampled the group&#x2019;s work (a artist[Red Hot Chili Peppers] cover of &#x201C;track[Love Rollercoaster]&#x201D; on the soundtrack for album[Beavis and Butthead Do America]1 didn&#x2019;t hurt either). Greg highlights &#x201C;Skin Tight&#x201D; as prime example of Bonner&#x2019;s musical legacy.
+
+This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexposed bands], stops by the tag[Sound Opinions studio] for an interview and a brief live set. The group came together in era[1978] as part of place[New York City]&#x2019;s genre[punk] and genre[new wave] scene, and put out two classic, but minimally distributed albums before singer/guitarist name[Chris Stamey] left the group. Two more low profile records followed before the group tag[broke up]1 in era[1988]. Now the original dB&#x2019;s lineup is back with a tag[new album], album[Falling Off the Sky]. Jim used to frequently go see this band live in their earliest days, and it&#x2019;s clear that they haven&#x2019;t lost a step in their few decades off. During their visit, the band rips through three songs from album[Falling Off the Sky], and Stamey and co-frontman name[Peter Holsapple] talk with Jim and Greg about their early days in place[North Carolina], their label woes in the era[&#x2018;80s], and their decision to reunite not for a paycheck, but just because they were itching to play again. After you hear their interview, check out these two bonus performances: &#x201C;track[Happenstance]&#x201D; and &#x201C;track[Neverland],&#x201D; both from their best ever.</textarea>
+    </div>
+    <iframe class="_3 column" id="preview" src="preview.html" name="preview_frame" seamless="seamless" width="100%"></iframe>
+  </section> 
+  
+  <div id="network" class="container"></div>
+
+  <script type="text/javascript" charset="utf-8">
+    //<![CDATA[
+    
+    bootstrap.add(function () {
+      window.tagger = new tagger('tagger');
+    });
+
+    var selects_cursor = document.getElementById('selection');
+
+    
+    
+  selects_cursor.addEventListener('select', function (evt) {
+    var selected = this.value.substring(this.selectionStart, this.selectionEnd);
+    window.tagger.addTag(selected, this.selectionStart, this.selectionEnd);
+  }, false);
+  
+  var graph = {
+    genre:{},
+    era:{},
+    place:{},
+    album:{},
+    artist:{},
+    label:{},
+    name:{},
+    tag:{},
+    track:{}
+  };
+
+  graph.track['atv'] = new Array();
+  graph.album['bam'] = new Array();
+  
+  graph.track['atv'].push('bam');
+  graph.album['bam'].push('atv');
+  
+  
+
+  
+  selects_cursor.addEventListener('mouseup', function (evt) {
+    if(evt.metaKey || evt.altKey) {
+      var selected = this.value.substring(this.selectionStart, this.selectionEnd);
+      var excluded = new RegExp("^("+tagger.tags.join('|')+")|[\[]", "g");
+      if (excluded.test(selected)) {
+        alert('we shant be tagging this');
+        return;
+      }
+      var startIdx = this.selectionStart;
+      console.log('will replace: ' + selected);
+      
+      var stopIdx  = this.value.length - this.selectionEnd;
+      console.log(startIdx, stopIdx);
+      // console.log('{'.charCodeAt(0), '}'.charCodeAt(0), String.fromCharCode(92));
+      var re = new RegExp("([^]{"+(startIdx)+"})("+selected+")([^]{"+stopIdx+"})","m");
+      console.log(re.multiline);
+      if (re) {
+        console.log(re);
+        this.value = this.value.replace(re, '$1REPLACE_ME[$2]$3');
+      } else {
+        alert('this is an invalid expression');
+      }
+    
+      findMetadata(this.value); 
+    }
+  });
+  var count = 0;
+  
+  selects_cursor.addEventListener('keydown', function (evt) {
+    if (evt.keyCode > 15) return;
+    if (evt.keyCode == 9 || (evt.keyCode == 13 && this.selectionStart != this.selectionEnd)) {
+      evt.preventDefault();
+    }
+  })
+  
+  selects_cursor.addEventListener('keyup', function (evt) {
+    var startCursor = this.selectionStart;
+    switch (evt.keyCode) {
+      // open bracket [
+      case 219:
+        var endCursor = startCursor + 7
+        if (startCursor == this.value.length) {
+          this.value += 'REPLACE]';
+          this.setSelectionRange(startCursor, endCursor);
+          return;
+        }
+        var re = new RegExp("([^]{"+startCursor+"})([^]*)", 'm');
+        this.value = this.value.replace(re, "$1REPLACE]$2");
+        this.setSelectionRange(startCursor, endCursor);
+        break;
+      case 9:
+        var next = this.value.substr(this.selectionStart, 1);
+        if (next === ']') {
+          this.setSelectionRange(startCursor+1, startCursor+1);
+        } else if (next === '[') {
+          console.log('skip entire block');
+          
+        }
+        break;
+      // enter key
+      case 13:
+        if (this.selectionStart != this.selectionEnd) {
+          var endCursor = this.selectionEnd;
+          var selected = this.value.substring(startCursor, endCursor);
+          var endIdx  = this.value.length - endCursor;
+          var re = new RegExp("([^]{"+startCursor+"})("+selected+")([^]{"+endIdx+"})", 'm');
+          this.value = this.value.replace(re, "$1 REPLACE_ME[$2]$3");
+        
+          this.setSelectionRange(startCursor + 1, endCursor+11 - selected.length);
+          console.log('perform a command!');
+        }
+        break;
+    }
+
+    findMetadata(this.value);
+  });
+  
+  function findMetadata(value) {
+    var preview = worker.postMessage(value);
+  }
+  //]]>
+  </script>
+  </body>
+</html>

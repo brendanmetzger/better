@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+    "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>View</title>
+  <style type="text/css" media="screen">
+  * {
+    margin:0;
+    padding:0;
+  }
+  body {
+    font:200 0.625em/1.85em 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica;
+  }
+  div {
+    margin:2em;
+    padding:2em;
+    width:50em;
+  }
+  hr {
+    border:none;
+    border-bottom:1px solid #333;
+    margin:1em 0;
+  }
+  pre {
+    font-family:Inconsolata, 'Courier New';
+  }
+  .new {
+    clear:left;
+    float:left;
+    padding:0 0.25em 0 0;
+    display:block;
+    
+  }
+  </style>
+  <script type="text/javascript" charset="utf-8">
+    // <![CDATA[
+    window.bootstrap = (function() {
+      var components = [], scripts = [];
+      return { 
+        add: function(fun) {components.unshift(fun);},
+        tag: function (src) {var s = document.createElement('script'); s.type = 'text/javascript'; s.src = src;return s;},
+        queue: function(){for (var i=0; i < arguments.length; i++) {var s = this.tag(arguments[i]); s.onload = this.load; scripts.push(s);}; return this;},
+        load: function(){ if (scripts.length > 0) {document.body.appendChild(scripts.shift()); } else { window.bootstrap.init(); } },
+        init: function() {components.forEach(function(component) { if (typeof component != 'function') return; component.call(); }); }
+    };})();
+    bootstrap.queue('serializedContent.json');
+    window.onload = window.bootstrap.load;
+    // ]]>
+  </script>
+</head>
+<body>
+  <script type="text/javascript" charset="utf-8">
+  function elem(tag, content) {
+    var elem = document.createElement(tag);
+    if (content) {
+      if (content.search(/\<[a-z\"\=\/ ]+\>/i) >= 0) {
+        console.log(content);
+        elem.innerHTML = content;
+      } else {
+        elem.appendChild(document.createTextNode(content));
+      }
+    }
+    return elem;
+  }
+  
+  var data = null;
+  function soLoaded(json) {
+    data = json
+    json.forEach(function (item, idx) {
+      var div = elem('div');
+      div.addEventListener('click', function (evt) {
+        console.log(idx);
+      }, false);
+      div.appendChild(elem('h2', item.Show +' '+ item.Date));
+      var img = div.appendChild(new Image());
+      img.src = item.MainImage;
+      div.appendChild(elem('h3', item.Guests));
+      div.appendChild(elem('p', item.ShowNotes.replace(/((^[1-9]{1}|\n+[1-9]{1})[a-d]?\s)/gi, '<strong class="new">$1</strong>')));
+      div.appendChild(elem('p', item.Recurringsegments));
+      div.appendChild(elem('p', '<h3>Featured Songs</h3>'+item.FeaturedSongs.replace(/(.+)\n/ig, '<em style="display:block">$1</em>')));
+      
+      div.appendChild(elem('hr'));
+      var audio = div.appendChild(elem('audio'));
+      audio.setAttribute('src', item.Audio);
+      document.body.appendChild(div);
+    });
+  }
+  </script>
+  </style>
+</body>
+</html>
