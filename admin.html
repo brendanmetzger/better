@@ -79,6 +79,10 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
       editor.macro.addEvent('enter', function() {
         console.log('perform enter stuff');
       });
+      
+      editor.addEvent('cursor', function () {
+        // console.log(this.cursor.getPosition());
+      });
     });
 
     var selects_cursor = document.getElementById('selection');

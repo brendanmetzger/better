@@ -2,13 +2,46 @@ var worker = new Worker('js/parser.js');
 
 var edges = {};
 
+
+var graph = {
+  track:{},
+  tag:{},
+  place:{},
+  name:{},
+  label:{},
+  genre:{},
+  era:{},
+  artist:{},
+  album:{}
+  
+
+
+  
+  
+  
+  
+  
+};
+
 bootstrap.add(function () {
+  var nw = document.id('network');
+  Object.each(graph, function (value, key) {
+    value.node = new Element('ul', {
+      'id': key,
+      'class': '_1 column',
+      'html': '<li><h2>'+key+'s</h2></li>'
+    }).inject(nw);
+  });
+  
   worker.addEventListener('message', function(e) {
     document.id('timestamp').set('text', 'Preview last updated: ' + new Date)
     document.id('preview').contentDocument.body.innerHTML = e.data.markup;
     document.id('statistics').set('text', 'Statistics: {chars} characters, {words} words, {tags} tags'.substitute(e.data.statistics))
     var nw = document.id('network');
-    nw.empty();
+    
+    for(method in nw) {
+      // console.log(method);
+    }
     
     var group = {id:null};
     e.data.tags.sort(function (a, b) {
@@ -63,6 +96,7 @@ function gcd(a, b) {
   }
 }
 
+
 var Ed = window.Ed || {};
 
 
@@ -79,6 +113,7 @@ Ed.buffer = new Class({
   initialize: function () {
     this.stack = new Array();
   },
+  
   record: function (key){
     this.last = key;
     this.stack.push(key);
@@ -89,10 +124,10 @@ Ed.buffer = new Class({
   play: function (callback){
     this.stack.each(callback)
   },
-  getLastWord: function (){
-    return this.stack.map(function (key) {
+  getBuffer: function (len){
+    return this.stack.slice(-len).map(function (key) {
       return String.fromCharCode(key);
-    }).join('').split(/\b/i).pop();
+    }).join('');
   }
 });
 
@@ -110,12 +145,18 @@ Ed.cursor = new Class({
     this.end   = this.field.selectionEnd;
     return this.getText().substring(this.start, this.end) || false;
   },
+  getPosition: function (attribute){
+    return this.field.selectionStart;
+  },
+  getLength: function (){
+    return this.getText().length;
+  },
   setText: function (text, range){
     // if range included, will be a find/replace operation
     this.field.value = text;
   },
-  replace: function (re, string){
-    
+  replace: function (re, replace){
+    this.setText(this.getText().replace(re, replace));
   }
   // moveCursor
   // cursorPosition
@@ -132,6 +173,7 @@ Ed.it = new Class({
     
     this.field.addEventListener('select', function (evt) {
       this.fireEvent('textSelect');
+      this.fireEvent('cursor');
     }.bind(this), false);
     
     this.field.addEventListener('keydown', function (evt) {
@@ -145,6 +187,7 @@ Ed.it = new Class({
     
     this.field.addEventListener('keyup', function (evt) {
       this.macro.parse(evt.keyCode);
+      this.fireEvent('cursor');
       this.fireEvent('textInput');
       
     }.bind(this), false);
@@ -157,7 +200,7 @@ Ed.it = new Class({
 Ed.trigger = new Class({
   Implements: Events,
   commands: {
-    tab: ['tag', 'bold', 'italic', 'link', 'image'],
+    tab: ['TAG', 'BOLD', 'ITALIC', 'LINK', 'IMAGE'],
     enter : ['%']
   },
   codes: [],
@@ -172,35 +215,35 @@ Ed.trigger = new Class({
   parse: function (key){
     this.trigger = this.codes[key];
     if (this.trigger) {
-      var buf = this.buffer.getLastWord().toLowerCase();
-      if (this.commands[this.trigger].contains(buf)) {        
-        this[this.trigger].call(this.cursor, buf);
-        this.fireEvent(buf);
-      } else {
-        this[this.trigger].call(this.cursor, buf);
-        this.fireEvent(this.trigger);
+      var cmd = this.buffer.getBuffer(10).match(/[A-Z]+$/);
+      if (cmd && this.commands[this.trigger].contains(cmd[0])) {
+        this[this.trigger].call(this.cursor, cmd[0]);
+        this.fireEvent(cmd[0]);
       }
       
     } 
   },
   tab: function (cmd){
-    console.log(this, cmd);
+    // console.log(this, cmd);
       // we need to know the next character, to do some better matching. ie
-      // tag(tab)someword should produce tag|artist|album|etc|something[someword], and you tab through the results
-    if (cmd == 'tag') {
+      // tag(tab)someword should produce tag|artist|album|etc|something[someword], and you tab through the results,
+      // where someword would be the breselected text, or a default value like REPLACE, would want to do an operation based on,
+      // selection, like it it was a link or image, then do some kind of analysis
+    if (cmd == 'TAG') {
       var categories = ['genre','era','place','album','artist','label','name','tag','track'];
       var text = this.getSelectedText();
       if (categories.contains(text)) {
         console.log('cycle through commands, hit enter when done.');
       } else {
+	      console.log(cmd);
         var startCursor = this.start - cmd.length;
-        var endCursor = this.end;
-        var endIdx  = this.getText().length - endCursor;
-        var re = new RegExp("([^]{"+(startCursor)+"})("+cmd+")([^]{"+endIdx+"})", 'm');
+        var endCursor = this.end - cmd.length;
+
+        var re = new RegExp("([^]{"+(startCursor)+"})[^]{"+cmd.length+"}([^]*)", 'm');
         
-        this.setText(this.getText().replace(re, "$1artist$3"));
+        this.replace(re, "$1artist$2")
   
-        this.field.setSelectionRange(startCursor, endCursor + 'artist'.length - 3);
+        this.field.setSelectionRange(startCursor, endCursor + 'artist'.length - cmd.length);
       }
       
     }
@@ -249,21 +292,3 @@ var tagger = new Class({
 })
 
 
-
-var graph = {
-  genre:{},
-  era:{},
-  place:{},
-  album:{},
-  artist:{},
-  label:{},
-  name:{},
-  tag:{},
-  track:{}
-};
-
-graph.track['atv'] = new Array();
-graph.album['bam'] = new Array();
-
-graph.track['atv'].push('bam');
-graph.album['bam'].push('atv');
