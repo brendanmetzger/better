@@ -171,7 +171,9 @@ Ed.cursor = new Class({
     return this.field.value;
   },
   getSelectedText: function (){
-    return this.getText().substring(this.getStart(), this.getEnd()) || false;
+    this.start = this.getStart();
+    this.end = this.getEnd();
+    return this.getText().substring(this.start, this.end) || false;
   },
   getPosition: function (attribute){
     return this.field.selectionStart;
@@ -319,6 +321,7 @@ Ed.tagger = new Class({
   },
   change: function (evt, input){
     var FOLDTHISIN = document.id('selection');
+    
     if (this.tag.object.type) {
       var re = RegExp("([^]{" + this.tag.object.range[0] + "})" + this.tag.object.type + "([^]*)", 'm');
       FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1"+input.value+"$2");
