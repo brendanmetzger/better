@@ -1,69 +1,68 @@
 var worker = new Worker('js/parser.js');
 
 var edges = {};
-
+var taglist = window.taglist || {index: [], tags: []};
 
 var graph = {
   track:{},
-  tag:{},
-  place:{},
-  name:{},
-  label:{},
-  genre:{},
-  era:{},
+  album:{},
   artist:{},
-  album:{}
-  
-
-
-  
-  
-  
-  
-  
+  era:{},
+  label:{},
+  name:{},
+  place:{},
+  genre:{},
+  tag:{}
 };
+
+// this just converts our text into something that we can use as an _id in mongo-- over and over
+function encode(string, prefix) {
+  var code = '1';
+  
+  // only care about lowercase, only letters... thus 'power pop = power-pop = PowerPop!
+  // -- could be detrimental for instances like 'in tomorrow' 'into morrow', but I think
+  //    the benefits outweigh the anomalies...
+  
+  string = string.toLowerCase().replace(/\W/g, '');
+  
+  for(letter in string) {
+    code += string.charCodeAt(letter).toString();
+  }
+
+  return prefix + parseInt(code).toString(36);
+}
 
 bootstrap.add(function () {
   var nw = document.id('network');
+  
   Object.each(graph, function (value, key) {
+    var div = new Element('div', {
+      'class': '_1 column',
+      'html': '<h2>'+key+'s</h2>'
+    }).inject(nw);
+    
     value.node = new Element('ul', {
       'id': key,
-      'class': '_1 column',
-      'html': '<li><h2>'+key+'s</h2></li>'
-    }).inject(nw);
+    }).inject(div);
   });
   
   worker.addEventListener('message', function(e) {
+    taglist = {index: e.data.index, tags: e.data.tags};
     document.id('timestamp').set('text', 'Preview last updated: ' + new Date)
     document.id('preview').contentDocument.body.innerHTML = e.data.markup;
     document.id('statistics').set('text', 'Statistics: {chars} characters, {words} words, {tags} tags'.substitute(e.data.statistics))
-    var nw = document.id('network');
     
-    for(method in nw) {
-      // console.log(method);
-    }
-    
-    var group = {id:null};
-    e.data.tags.sort(function (a, b) {
-      if (a.type > b.type) return -1;
-      else if (a.type < b.type) return 1;
-      return 0;
-      
-    }).each(function (tag) {
-      if (group.id != tag.type) {
-        group = new Element('ul', {
-          'id': tag.type,
-          'class': '_1 column',
-          'html': '<li><h2>'+tag.type+'s</h2></li>'
-        }).inject(nw);
-      }
-      
-      var vertice = new Element('li', {
+    Object.each(graph, function (value, key) {
+      value.node.empty();
+    });
+
+    e.data.tags.each(function (tag) {
+      graph[tag.type].node.grab(new Element('li', {
         'draggable': true,
         'class': tag.type,
         'id': tag.id,
         'text': tag.name
-      }).inject(group);
+      }));
       
       
       
@@ -71,15 +70,6 @@ bootstrap.add(function () {
   }, false);
   
   
-  var notepad = document.getElementById('selection');
-  var size = window.getComputedStyle(notepad, null).getPropertyValue("line-height");
-  var bg = btoa("<svg xmlns='http://www.w3.org/2000/svg' width='"+size+"' height='"+size+"' viewBox='0 0 50 50'><line x1='0' y1='50' x2='50' y2='50' stroke='#9DD1EF' fill='none'/></svg>");
-  bg = 'transparent url(data:image/svg+xml;base64,'+bg+') repeat 0 1px' ;
-  
-  notepad.style.background = bg;
-  var textarea = document.getElementById('selection');
-  textarea.focus();
-  findMetadata(textarea.value);
   
   var wheight = window.getSize().y;
   document.id('notebook').setStyle('height',  wheight - 250);
@@ -88,18 +78,58 @@ bootstrap.add(function () {
 
 });
 
-function gcd(a, b) {
-  if (b) {
-    return gcd(b, a % b);
-  } else {
-    return Math.abs(a);
-  }
-}
-
-
 var Ed = window.Ed || {};
 
+Ed.it = new Class({
+  Implements: Events,
+  input: null,
+  initialize: function (textarea) {
+    this.field = document.id(textarea);
+    this.cursor = new Ed.cursor(this.field);
+    this.buffer = new Ed.buffer;
+    this.macro  = new Ed.macro(this.cursor, this.buffer);
+    
+    this.field.addEventListener('select', function (evt) {
+      this.fireEvent('textSelect');
+      this.fireEvent('cursor');
+    }.bind(this), false);
+    
+    this.field.addEventListener('click', this.fireEvent.bind(this, 'cursor'), false);
+    
+    this.field.addEventListener('keydown', function (evt) {
+      var key = evt.keyCode;
+      /* 
+        1. never need to tab-out of the field
+        2. sometimes we will want to use the enter as a submit instead of newline
+      */
+      
+      if (key == 9 || (key == 13 && this.cursor.getSelectedText())) {
+        evt.preventDefault();
+        return;
+      }
+      
+      this.buffer.record(key);
+    }.bind(this), false);
+    
+    this.field.addEventListener('keyup', function (evt) {
+      this.macro.parse(evt.keyCode);
+      this.fireEvent('cursor');
+      this.fireEvent('textInput');
+    }.bind(this), false);
+    
 
+    this.ready.delay(25, this);
+    
+  },
+  ready: function () {
+    this.fireEvent('ready');
+    this.fireEvent('cursor');
+  }
+});
+
+Ed.console = new Class({
+  // the console should show what commands are avail.
+});
 
 // has an event interface
 Ed.buffer = new Class({
@@ -141,12 +171,16 @@ Ed.cursor = new Class({
     return this.field.value;
   },
   getSelectedText: function (){
-    this.start = this.field.selectionStart;
-    this.end   = this.field.selectionEnd;
-    return this.getText().substring(this.start, this.end) || false;
+    return this.getText().substring(this.getStart(), this.getEnd()) || false;
   },
   getPosition: function (attribute){
     return this.field.selectionStart;
+  },
+  getStart: function (){
+    return this.field.selectionStart;
+  },
+  getEnd: function (){
+    return this.field.selectionEnd;
   },
   getLength: function (){
     return this.getText().length;
@@ -157,54 +191,30 @@ Ed.cursor = new Class({
   },
   replace: function (re, replace){
     this.setText(this.getText().replace(re, replace));
+  },
+  getLastCharacter: function (){
+    /*
+      TODO implement
+    */
+  },
+  getNextCharacter: function (){
+    /*
+      TODO implement
+    */
   }
   // moveCursor
   // cursorPosition
 });
 
-Ed.it = new Class({
-  Implements: Events,
-  input: null,
-  initialize: function (textarea) {
-    this.field = document.id(textarea);
-    this.cursor = new Ed.cursor(this.field);
-    this.buffer = new Ed.buffer;
-    this.macro  = new Ed.trigger(this.cursor, this.buffer);
-    
-    this.field.addEventListener('select', function (evt) {
-      this.fireEvent('textSelect');
-      this.fireEvent('cursor');
-    }.bind(this), false);
-    
-    this.field.addEventListener('keydown', function (evt) {
-      var key = evt.keyCode;
-      if (key == 9 || (key == 13 && this.cursor.getSelectedText())) {
-        evt.preventDefault();
-        return;
-      }
-      this.buffer.record(key);
-    }.bind(this), false);
-    
-    this.field.addEventListener('keyup', function (evt) {
-      this.macro.parse(evt.keyCode);
-      this.fireEvent('cursor');
-      this.fireEvent('textInput');
-      
-    }.bind(this), false);
-  }
 
-  // find
-  // replace
-});
-
-Ed.trigger = new Class({
+Ed.macro = new Class({
   Implements: Events,
   commands: {
     tab: ['TAG', 'BOLD', 'ITALIC', 'LINK', 'IMAGE'],
-    enter : ['%']
+    enter : ['%'],
+    bracket: []
   },
   codes: [],
-  trigger: null,
   initialize: function (cursor, buffer){
     this.cursor = cursor;
     this.buffer = buffer;
@@ -213,15 +223,16 @@ Ed.trigger = new Class({
     this.codes[219] = 'bracket';
   },
   parse: function (key){
-    this.trigger = this.codes[key];
-    if (this.trigger) {
-      var cmd = this.buffer.getBuffer(10).match(/[A-Z]+$/);
-      if (cmd && this.commands[this.trigger].contains(cmd[0])) {
-        this[this.trigger].call(this.cursor, cmd[0]);
+    var trigger = this.codes[key];
+    if (trigger == 'tab') {
+      var cmd = this.buffer.getBuffer(25).match(/[A-Z]+$/);
+      if (cmd && this.commands[trigger].contains(cmd[0])) {
+        this[trigger].call(this.cursor, cmd[0]);
         this.fireEvent(cmd[0]);
       }
-      
-    } 
+    } else if (trigger == 'bracket') {
+      this[trigger].call(this.cursor);
+    }
   },
   tab: function (cmd){
     // console.log(this, cmd);
@@ -235,15 +246,11 @@ Ed.trigger = new Class({
       if (categories.contains(text)) {
         console.log('cycle through commands, hit enter when done.');
       } else {
-	      console.log(cmd);
-        var startCursor = this.start - cmd.length;
-        var endCursor = this.end - cmd.length;
-
-        var re = new RegExp("([^]{"+(startCursor)+"})[^]{"+cmd.length+"}([^]*)", 'm');
-        
-        this.replace(re, "$1artist$2")
-  
-        this.field.setSelectionRange(startCursor, endCursor + 'artist'.length - cmd.length);
+        var end = cmd.length;
+        var begin = this.getStart() - end;
+        var tags = ['genre','era','place','album','artist','label','name','tag','track'].join(' ');
+        this.replace(new RegExp("([^]{"+(begin)+"})[^]{"+end+"}([^]*)", 'm'), "$1"+tags+"$2");
+        this.field.setSelectionRange(begin, begin + tags.length);
       }
       
     }
@@ -259,36 +266,127 @@ Ed.trigger = new Class({
     console.log(this, buf);
   },
   bracket: function (buf){
-    console.log(this, buf);
+
+    var startCursor = this.getStart();
+    var endCursor = startCursor + 7
+    var text = this.getText();
+    
+    if (startCursor == text.length) {
+      this.setText(text + 'REPLACE]');
+      this.field.setSelectionRange(startCursor, endCursor);
+      return;
+    }
+    var re = new RegExp("([^]{"+startCursor+"})([^]*)", 'm');
+    this.replace(re, "$1REPLACE]$2");
+    this.field.setSelectionRange(startCursor, endCursor);
   }
 });
 
-var tagger = new Class({
+Ed.tagger = new Class({
   container: null,
   tags: ['genre','era','place','album','artist','label','name','tag','track'],
-  initialize: function (elem) {
-    this.tagger = document.id(elem);
+  initialize: function (container) {
+    this.tagger = document.id(container);
+    this.tag    = {
+      node: new Element('span', {
+        html: "<em>select text to tag</em> <code>&rarr;</code>"
+      }).inject(this.tagger),
+      object: null,
+    };
+    this.list   = new Element('ul', {
+      'class': 'container'
+    }).inject(this.tagger).addEvent('click:relay(input)', this.change.bind(this));
+    this.graph   = new Element('ul', {
+      'class': 'graph container'
+    }).inject(this.tagger)
   },
-  addTag: function (text, startCursor, endCursor){
+  getTags: function (join){
+    return join ? this.tags.join(join) : this.tags;
+  },
+  addTag: function (text, range){
     var excluded = this.excludeText(text);
+    /*
+      TODO first check range using taglist!
+    */
     if (! excluded) {
-      this.tagger.set('text', text);
+      this.tag.object = {range:range,name:text};
+      this.tag.node.set('html', '<code>&darr; pick[</code>'+text+'<code>]</code>').className = '';
+      this.addSelectionBlock();
     } else {
-      this.tagger.set('html', '<span class="error">We cannot add this text because '+excluded+'</span>')
+      this.tag.node.set('html', '<span class="error">'+excluded+'</span>').className = '';
     }
     
   },
+  change: function (evt, input){
+    var FOLDTHISIN = document.id('selection');
+    if (this.tag.object.type) {
+      var re = RegExp("([^]{" + this.tag.object.range[0] + "})" + this.tag.object.type + "([^]*)", 'm');
+      FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1"+input.value+"$2");
+    } else {
+      var re = RegExp("([^]{" + this.tag.object.range[0] + "})(" + this.tag.object.name + ")([^]*)", 'm');
+      FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1" + input.value + "[$2]$3");
+    }
+    
+    this.list.empty();
+    this.tag.node.set('html', '<code>'+input.value+'[</code>'+this.tag.object.name+'<code>]</code>').className = input.value;
+    worker.postMessage(FOLDTHISIN.value);
+    this.tag.object.id = encode(this.tag.object.name, input.value.slice(0,3));
+    this.tag.object.type = input.value;
+    this.updateGraph();
+  },
+  edit: function (tag){
+    this.tag.object = tag;
+    this.tag.node.set('html', '<code>'+tag.type+'[</code>'+tag.name+'<code>]</code>').className = tag.type;
+    this.addSelectionBlock(tag.type);
+  },
+  addSelectionBlock: function (type){
+    this.list.empty();
+    
+    this.getTags().each(function (tag) {
+      this.list.grab(new Element('li', {
+        'class': tag,
+      }).adopt(boxes(tag, tag == type, 'radio')));
+    }, this);
+  },
   excludeText: function (text){
-    var re = new RegExp("^("+this.tags.join('|')+")|[\[]", "g");
+    var re = new RegExp("^("+this.getTags('|')+")|[\[]", "g");
     matches = text.match(re);
-    if (matches) {
-      return matches[0] + ' is a reserved keyword';
-    } else if (text.length >= 50) {
-      // the longest band names I could find with a quick good were between 42-45
-      return 'the text is too long (' +text.length+' characters)';
+    if (text.length >= 50) {
+          // the longest band names I could find with a quick good were between 42-45
+          return 'The text is too long (' +text.length+' characters)';
+    } else if (matches) {
+      return '<strong>'+matches[0] + '</strong> is a reserved keyword';
     }
     return false;
+  },
+  updateGraph: function (){
+
+    this.graph.empty();
+    taglist.tags.sort(function (a, b) {
+      if (a.type > b.type) return -1;
+      else if (a.type < b.type) return 1;
+      return 0;
+    }).each(function (tag) {
+      if (this.tag.object.type == tag.type) return;
+      this.graph.grab(new Element('li', {
+        'class': tag.type
+      }).adopt(boxes(tag.name, false, 'checkbox')));
+    }, this);
   }
-})
+});
 
-
+var boxes = function (tag, selected, type) {
+  return [
+    new Element('input', {
+      'type': type,
+      'name': 'tag',
+      'value': tag,
+      'checked': selected ? 'checked' : false,
+      'id': '_' + tag
+    }),
+    new Element('label', {
+      'for': '_' + tag,
+      'text': tag,
+    })
+  ];
+};

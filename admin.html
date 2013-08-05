@@ -29,13 +29,14 @@
       <p><em id="statistics">Statistics</em></p>
     </div>
     <div class="_3 column">
-      <p><em id="timestamp">Preview</em> <button onclick="var p = document.getElementById('preview').contentDocument.body; if (p.className == 'highlighted') {p.className = ''; this.textContent = 'Show Highlighting';} else {p.className = 'highlighted'; this.textContent = 'No Highlighting'} return false;">No Highlighting</button></p>
+      <p><time id="timestamp">Preview</time> <button onclick="var p = document.getElementById('preview').contentDocument.body; if (p.className == 'highlighted') {p.className = ''; this.textContent = 'Show Highlighting';} else {p.className = 'highlighted'; this.textContent = 'No Highlighting'} return false;">No Highlighting</button></p>
     </div>
   </section>
   <section class="container">
     <div class="_2 column">
+      <div id="tagger"></div>
       <details id="help">
-        <summary>Help &amp; Guides</summary>
+        <summary>Help With Tagging</summary>
         <dl>
           <dt>What are tags for?</dt>
           <dd>Tags are the brain of this operation. In a nutshell, there is copy, some very minimal styling, and heavy tag-age. That said, tags should be significant across episodes and even within an article. For example, 'guitarist' is a good tag because it could be related to another <strong>catagorical tag</strong> such as name[somebody] which will give the query engine lots more to work with.</dd>
@@ -45,11 +46,6 @@
           <dd>Tag <em>keywords</em> should be lowercase, always. They have the format <strong>keyword[</strong>Some Text<strong>]</strong></dd>
         </dl>
       </details>
-
-      <div id="tagger">
-        
-      </div>
-      <hr style="border:none;border-bottom:1px solid #ddd;margin:1em 0"/>
     </div>
     <div id="notebook" class="_5 column">
       <textarea id="selection" class="editing" spellcheck="false">Guitarist and artist[Ohio Players] frontman name[Leroy &#x201C;Sugarfoot&#x201D; Bonner] died of undisclosed causes this week at the age of 69. The group&#x2019;s string of era[&#x2018;70s] albums for label[Westbound] and label[Mercury Records], driven by Bonner&#x2019;s lead vocals and electrifying double-neck guitar work, stands as one of the most impressive runs in funk history. Their distinct sound found new life in the in the late era[&#x2018;80s] and era[&#x2018;90s] as countless genre[hip hop] artists sampled the group&#x2019;s work (a artist[Red Hot Chili Peppers] cover of &#x201C;track[Love Rollercoaster]&#x201D; on the soundtrack for album[Beavis and Butthead Do America]1 didn&#x2019;t hurt either). Greg highlights &#x201C;Skin Tight&#x201D; as prime example of Bonner&#x2019;s musical legacy.
@@ -65,11 +61,11 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
     //<![CDATA[
     
     bootstrap.add(function () {
-      window.tagger = new tagger('tagger');
+      var tagger = new Ed.tagger('tagger');
       var editor = new Ed.it('selection');
       
       editor.addEvent('textSelect', function (evt) {
-        window.tagger.addTag(this.cursor.getSelectedText());
+        tagger.addTag(this.cursor.getSelectedText(), [this.cursor.start, this.cursor.end]);
       })
       
       editor.addEvent('textInput', function () {
@@ -81,63 +77,30 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
       });
       
       editor.addEvent('cursor', function () {
-        // console.log(this.cursor.getPosition());
+        var pos = this.cursor.getPosition();
+        if (taglist.index[pos] > 0) {
+          var elem = taglist.index[pos];
+          tagger.edit(taglist.tags[elem]);
+        }
+      });
+      
+      editor.addEvent('ready', function () {
+        var size = window.getComputedStyle(this.field, null).getPropertyValue("line-height");
+        var bg = btoa("<svg xmlns='http://www.w3.org/2000/svg' width='"+size+"' height='"+size+"' viewBox='0 0 50 50'><line x1='0' y1='50' x2='50' y2='50' stroke='#9DD1EF' fill='none'/></svg>");
+        this.field.style.background = 'transparent url(data:image/svg+xml;base64,'+bg+') repeat 0 1px' ;
+        this.field.focus();
+        findMetadata(this.field.value);
+        
       });
     });
 
-    var selects_cursor = document.getElementById('selection');
 
-    
-    
-  
-  
-  
-  selects_cursor.addEventListener('mouseup', function (evt) {
-    if(evt.metaKey || evt.altKey) {
-      var selected = this.value.substring(this.selectionStart, this.selectionEnd);
-      var excluded = new RegExp("^("+tagger.tags.join('|')+")|[\[]", "g");
-      if (excluded.test(selected)) {
-        alert('we shant be tagging this');
-        return;
-      }
-      var startIdx = this.selectionStart;
-      console.log('will replace: ' + selected);
-      
-      var stopIdx  = this.value.length - this.selectionEnd;
-      
-      // console.log('{'.charCodeAt(0), '}'.charCodeAt(0), String.fromCharCode(92));
-      var re = new RegExp("([^]{"+(startIdx)+"})("+selected+")([^]{"+stopIdx+"})","m");
-      if (re) {
+    /*
 
-        this.value = this.value.replace(re, '$1REPLACE_ME[$2]$3');
-      } else {
-        alert('this is an invalid expression');
-      }
-    
-      findMetadata(this.value); 
-    }
-  });
-
-  window.buffer = '';
-  var commands   = ['tag', 'bold', 'italic', 'link', 'image'];
-
-  
   
   selects_cursor.addEventListener('keyup', function (evt) {
     var startCursor = this.selectionStart;
     switch (evt.keyCode) {
-      // open bracket [
-      case 219:
-        var endCursor = startCursor + 7
-        if (startCursor == this.value.length) {
-          this.value += 'REPLACE]';
-          this.setSelectionRange(startCursor, endCursor);
-          return;
-        }
-        var re = new RegExp("([^]{"+startCursor+"})([^]*)", 'm');
-        this.value = this.value.replace(re, "$1REPLACE]$2");
-        this.setSelectionRange(startCursor, endCursor);
-        break;
       case 13:
         // enter key, will be tricky
         if (this.selectionStart != this.selectionEnd) {
@@ -153,7 +116,7 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
     }
 
   });
-  
+  */
   function findMetadata(value) {
     var preview = worker.postMessage(value);
   }

@@ -21,14 +21,22 @@ self.addEventListener('message', function(e) {
   var message = e.data;
   message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
           var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
-          return '<em style="color:green">(@'+seconds+' seconds in)</em>';
+          return '<em class="timestamp">(@'+seconds+' seconds in)</em>';
         });
   var markdown = '';
   var tags = [];
-  markdown += marked(message.replace(/(genre|era|place|album|artist|label|name|tag|track)\[([^[]*)\]/g, function (match, type, tag) {
+  var counter = 1;
+  var index = new Uint8Array(message.length);
+  markdown += marked(message.replace(/(genre|era|place|album|artist|label|name|tag|track)\[([^[]*)\]/g, function (match, type, tag, position) {
     var id = encode(tag, type.slice(0,3));
-    tags.push({type: type, name: tag, id: id});
-    return '<span rel="'+id+'" class="'+type+'">'+tag+'</span>'
+    var end = (position + type.length + tag.length + 2);
+    var range = [position, end];
+    while (position<=end+1) {
+      index[position++] = counter;
+    }
+    tags[counter] = {type: type, name: tag, id: id, range: range};
+    counter++;
+    return '<span rel="'+id+'" class="'+type+'" data-begin="'+position+'" data-end="'+ end +'">'+tag+'</span>'
   }));
   
   var stats = {
@@ -36,6 +44,6 @@ self.addEventListener('message', function(e) {
     chars: e.data.length,
     tags: tags.length
   }
-  self.postMessage({markup:markdown, tags: tags, statistics: stats});
+  self.postMessage({markup:markdown, tags: tags, statistics: stats, index: index});
   
 }, false);

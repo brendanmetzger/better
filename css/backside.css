@@ -57,6 +57,10 @@ h1 {
 }
 .error {
   color:red;
+  line-height:1em;
+  white-space: pre;
+  
+  font-size:0.75em !important;
 }
 #help {
   font-size:1.25em;
@@ -119,13 +123,16 @@ textarea {
 
   position:relative;
 }
-#network > ul {
-  padding:0.5%;
-  
+#network ul {
+  padding:0;
   list-style: none;
 }
 
-#network ul:not(:first-child){
+
+#network div {
+  padding:0.5%;
+}
+#network div:not(:first-child){
   border-left:1px dotted #ddd;
 }
 
@@ -133,7 +140,7 @@ textarea {
   margin:0.5em;
   text-transform:capitalize;
 }
-#network li[class] {
+#network li {
   line-height:1em;
   display:inline-block;
   border-radius:0.25em;
@@ -142,39 +149,146 @@ textarea {
 }
 
 
-.album {
-  background-color:rgba(255,0,0,0.3);
-}
-.artist {
-  background-color:rgba(255,0,255,0.3);
-}
-.name {
-  background-color:rgba(0,255,0,0.3);
-}
-.era {
-  background-color:rgba(255,255,0,0.3);
-}
-.label {
-  background-color:rgba(0,0,255,0.3);
-}
-.track {
-  background-color:rgba(0,255,255,0.3);
-}
-.genre {
-  background-color:rgba(0,0,0,0.3);
-}
-.place {
-  background-color:rgba(130,3,110,0.3);
-}
-.tag {
-  background-color:#eee;
-}
-._1 {
-  color:#555;
-}
+
+
 
 blockquote {
   margin: 1em;
   font-style:italic;
   font-family:serif;
 }
+
+
+
+
+
+
+
+#tagger span {
+  font-size:2em;
+  background-color:#f8f8f8;
+  display:block;
+  margin:0.25em;
+  text-align:center;
+  padding:1em 0;
+}
+
+
+#tagger span code {
+  opacity:0.2;
+}
+#tagger ul {
+  margin:1.5%;
+  padding:0;
+  list-style:none;
+}
+
+#tagger ul li {
+  margin:0.25% 0.5%;
+  width:30%;
+  float:left;
+  border-radius:0.25em;
+  padding:1%;
+  font-size:1.25em;
+}
+
+#tagger ul.graph li {
+  width:47%;
+  font-size:1em;
+}
+
+/* radio buttons */
+
+input[type="checkbox"],input[type="checkbox"] + label:hover,input[type="radio"] + label:hover {
+    cursor: pointer;
+    text-shadow:0 0 1em #fff;
+  }
+
+
+  input[type="checkbox"] + label,input[type="radio"] + label {
+    display: inline;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    line-height: 1.5em !important;
+    color: #333;
+  }
+  
+  input[type="checkbox"]:not([class]),input[type="radio"]:not([class]) {
+    display: none;
+    margin: 0;
+    font-size:1.25em  }
+  input[type="checkbox"]:not([class]) + label:before,input[type="radio"]:not([class]) + label:before {
+    content: '';
+    line-height: 1.25em;
+    width: 1em;
+    padding:0 0.5em;
+    display: inline-block;
+    font-weight: 200 !important;
+    color: #333;
+  }
+  input[type="radio"]:not([class]) + label:before {
+    content: '';
+  }
+  
+  input[type="radio"]:checked + label {
+    cursor: default;
+  }
+  input[type="checkbox"]:checked + label:hover:before {
+    content: '\2013';
+    opacity: 1;
+    color: #000;
+  }
+  input[type="radio"]:not([class]):checked + label:before {
+    content: '\25CF';
+    opacity: 1;
+  }
+  input[type="checkbox"] + label:hover:before,input[type="radio"] + label:hover:before {
+    opacity: 1;
+  }
+  
+  input[type="checkbox"]:checked + label,input[type="radio"]:checked + label {
+    font-weight: 600;
+    opacity:1;
+    color:#333;
+
+  }
+  input[type="checkbox"]:not([class]):checked + label:before,input[type="radio"]:not([class]):checked + label:before {
+    content: '\2713';
+    font-size: 0.9em;
+    color: #000;
+  }
+  input[type="checkbox"]:checked + label:hover,input[type="radio"]:checked + label:hover {
+    color: #333;
+  }
+
+
+
+
+  .album {
+    background-color:rgba(255,0,0,0.3) !important;
+  }
+  .artist {
+    background-color:rgba(255,0,255,0.3) !important;
+  }
+  .name {
+    background-color:rgba(0,255,0,0.3) !important;
+  }
+  .era {
+    background-color:rgba(255,255,0,0.3) !important;
+  }
+  .label {
+    background-color:rgba(0,0,255,0.3) !important;
+  }
+  .track {
+    background-color:rgba(0,255,255,0.3) !important;
+  }
+  .genre {
+    background-color:rgba(0,0,0,0.3) !important;
+  }
+  .place {
+    background-color:rgba(130,3,110,0.3) !important;
+  }
+  .tag {
+    background-color:#eee !important;
+  }
