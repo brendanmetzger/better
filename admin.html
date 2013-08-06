@@ -22,18 +22,18 @@
   </head>
   <body>
   <section id="toolbar" class="container">
-    <div class="_2 column">
+    <div class="_25 column">
       <p>Welcome, User</p>
     </div>
     <div class="_5 column">
       <p><em id="statistics">Statistics</em></p>
     </div>
-    <div class="_3 column">
-      <p><time id="timestamp">Preview</time> <button onclick="var p = document.getElementById('preview').contentDocument.body; if (p.className == 'highlighted') {p.className = ''; this.textContent = 'Show Highlighting';} else {p.className = 'highlighted'; this.textContent = 'No Highlighting'} return false;">No Highlighting</button></p>
+    <div class="_25 column">
+      <p><time id="timestamp">Preview</time></p>
     </div>
   </section>
   <section class="container">
-    <div class="_2 column">
+    <div class="_25 column">
       <div id="tagger"></div>
       <details id="help">
         <summary>Help With Tagging</summary>
@@ -41,18 +41,66 @@
           <dt>What are tags for?</dt>
           <dd>Tags are the brain of this operation. In a nutshell, there is copy, some very minimal styling, and heavy tag-age. That said, tags should be significant across episodes and even within an article. For example, 'guitarist' is a good tag because it could be related to another <strong>catagorical tag</strong> such as name[somebody] which will give the query engine lots more to work with.</dd>
           <dt>What is a categorical tag?</dt>
-          <dd>categorical tags are prefixed with something other than tag[whatever]; ie artist[whatever], place[whatever], or</dd>
+          <dd>categorical tags are prefixed with something other than {tag: whatever}; ie {artist: whatever}, {place: whatever}.</dd>
           <dt>What are the tag rules</dt>
           <dd>Tag <em>keywords</em> should be lowercase, always. They have the format <strong>keyword[</strong>Some Text<strong>]</strong></dd>
         </dl>
       </details>
     </div>
     <div id="notebook" class="_5 column">
-      <textarea id="selection" class="editing" spellcheck="false">Guitarist and artist[Ohio Players] frontman name[Leroy &#x201C;Sugarfoot&#x201D; Bonner] died of undisclosed causes this week at the age of 69. The group&#x2019;s string of era[&#x2018;70s] albums for label[Westbound] and label[Mercury Records], driven by Bonner&#x2019;s lead vocals and electrifying double-neck guitar work, stands as one of the most impressive runs in funk history. Their distinct sound found new life in the in the late era[&#x2018;80s] and era[&#x2018;90s] as countless genre[hip hop] artists sampled the group&#x2019;s work (a artist[Red Hot Chili Peppers] cover of &#x201C;track[Love Rollercoaster]&#x201D; on the soundtrack for album[Beavis and Butthead Do America]1 didn&#x2019;t hurt either). Greg highlights &#x201C;Skin Tight&#x201D; as prime example of Bonner&#x2019;s musical legacy.
+      <textarea id="selection" class="editing" spellcheck="false"># Show 379 3.1.2013
 
-This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexposed bands], stops by the tag[Sound Opinions studio] for an interview and a brief live set. The group came together in era[1978] as part of place[New York City]&#x2019;s genre[punk] and genre[new wave] scene, and put out two classic, but minimally distributed albums before singer/guitarist name[Chris Stamey] left the group. Two more low profile records followed before the group tag[broke up]1 in era[1988]. Now the original dB&#x2019;s lineup is back with a tag[new album], album[Falling Off the Sky]. Jim used to frequently go see this band live in their earliest days, and it&#x2019;s clear that they haven&#x2019;t lost a step in their few decades off. During their visit, the band rips through three songs from Falling Off the Sky, and Stamey and co-frontman name[Peter Holsapple] talk with Jim and Greg about their early days in place[North Carolina], their label woes in the era[&#x2018;80s], and their decision to reunite not for a paycheck, but just because they were itching to play again. After you hear their interview, check out these two bonus performances: &#x201C;track[Happenstance]&#x201D; and &#x201C;track[Neverland],&#x201D; both from their best ever.</textarea>
+![swedish flag](http://www.soundopinions.org/images/2013/swedishrock.jpg)
+
+## Stefan Wermelin
+For as long as we can recall, the music industry story has been a sad one. But perhaps, there’s a happy ending? It has taken 13 years, but music revenues are finally up, albeit by 3%. But that’s still cause for celebration. Looks like digital music has been a big boost to the record biz, with its contribution to 30% of sales. And who was selling? Well, no surprises here: {artist: Adele} and {artist: Carly Rae Jepsen} are the reigning queens.
+
+## Record Industry Stuff
+This week the Center for Copyright Information, which includes members of the {tag: RIAA}, {tag: MPA} and many ISP’s, will begin to alert users engaged in illegal activity like piracy. The system hopes to be educational, rather than punitive. So, after “six strikes,” or alerts, a user may lose internet speed or be forced to watch videos about piracy. Will this be enough to curb a commonplace practice? We dunno, but here’s a video to tell you more. And please note the exits to your right and left.
+
+## World things
+Jim and Greg have always insisted that {genre: rock ‘n’ roll} belongs to the world. In our new series, the Sound Opinions World Tour, they prove it by zeroing in on countries that’ve made big contributions to global {genre: rock} and {genre: pop}. Their first stop is the largest exporter of music per capita in the world: {place: Sweden}. Swedish {tag: DJ} and public radio host {name: Stefan Wermelin} is our guide through the country’s musical history. Stefan explains that in the {era: ‘50s} and {era: ‘60s}, Sweden was a pop music backwater. Musicians churned out cut-rate covers of American and English hits. The ‘60s hippie “Progg” movement injected some originality and artistic ambition into Swedish music, but things didn’t really change until ABBA hit it big with “Waterloo.” According to Stefan, ABBA set the template for Swedish success. The band created big hits by co-opting the best bits of global pop music and stitching them together with meticulous production. That tradition of pastiche continues today with Swedish producers like Max Martin, the man behind a hundred-and-one Billboard Top Ten hits ({artist: Britney Spears}’ “…{track: Baby One More Time}” and {name: Kelly Clarkson}’s “Since U Been Gone” among them). But today, Sweden’s also experiencing an indie renaissance in genres as varied as death metal, dance music, and Americana. Decades after ABBA, artists like The Knife,Lykke Li, {artist: Robyn}, {artist: Opeth}, and {artist: First Aid Kit} are staging a second Swedish invasion. Check out our Sweden Playlist, inspired by this week’s show, on Spotify.
+
+## What Thom Yorke is up to
+After his solo project {album: The Eraser}, {tag: Radiohead} frontman {name: Thom Yorke} went out on tour with a group that could only be described as “super”: {artist: Red Hot Chili Peppers}’ {name: Flea} on bass, Radiohead {tag: producer} {name: Nigel Godrich} on programming, {name: Joey Waronker} on {tag: drums} and {name: Mauro Refosco} on {tag: percussion}. The collaboration worked so well that the group has released an album under the name Atoms for Peace. Greg was impressed with how The Eraser really found its identity live, and he has high hopes AMOK will do the same. But on record, the songs are not as strong as the production, so he can only say Burn It. In terms of his unique voice, Thom Yorke has finally won Jim over. He gets the robotic and alien nature of the voice the {genre: electronic} musicianship and the dystopian lyrics and says {tag: Buy It}.
+
+{name: Miles Davis} has been on Greg’s mind lately, and his revolutionary string of early {era: ‘70s} albums(including {album: Bitches Brew}, {album: Live-Evil}, and On the Corner) have been fixtures on Greg’s turntable for weeks. Miles’ rock and funk explorations can be partially credited to (or blamed on, depending on your point of view) his then wife, Betty Davis. She put out her own series of great records after their divorce. For his Desert Island Jukebox pick this week, Greg turns to the first song on {name: Betty Davis}’ {era: 1973} self-titled {tag: debut}, “{track: If I’m in Luck I Might Get Picked Up}.” Betty put together an incredible band of {artist: Santana} and {artist: Sly Stone} sidemen (including {name: Larry Graham} on {tag: bass}!), and wrote parts for them that contained more than enough grit and grime to complement her raspy {genre: blues} roar and bawdy lyrics. Even {artist: Prince} personally told Greg that he uses this song as a frequent source of inspiration!
+
+Greg's DIJ
+Featured Songs
+
+1. Carly Rae Jepsen, “Call Me Maybe,” Kiss, 604/Schoolboy/Interscope, 2012
+2. The B-52s, “Roam,” Cosmic Thing. Reprise, 1989
+3. Robyn, “Hang With Me,” Body Talk Pt. 2, Konichiwa, 2010
+4. Opeth, “The Drapery Falls,” Blackwater Park, Music for Nations, 2001
+5. Bill Haley and His Comets, “Rock Around the Clock,” Rock Around the 6. 6. Clock, Decca, 1955
+7. Bursell Twins, “Route 66,” single, 1956
+8. Hoola Bandoola Band, “Vem Kan Man Lita På,” Vem Kan Man Lita På, MNW, 1972
+9. Ebba Grön, “Staten Och Kapitalet” single, Mistlur, 1980
+10. Björn Ulvaeus & Benny Andersson, “Hej Gamle Man,” single, Polar, 1970
+11. ABBA, “Waterloo,” Waterloo, Polar, 1974
+12. ABBA, “Mamma Mia,” ABBA, Polar, 1975
+13. Lykke Li, “Get Some,” Wounded Rhymes, LL, 2011
+14. ABBA, “Fernando,” single, Polar, 1976
+15. Blue Swede, “Hooked on a Feeling,” Hooked on a Feeling, EMI, 1974
+16. Ace of Base, “The Sign,” The Sign, Warner Bros., 1993
+17. Backstreet Boys, “Everybody (Backstreet’s Back),” Backstreet’s Back, Jive, 1997
+18. In Flames, “Deliver Us,” Sounds of a Playground Fading, Century Media/Razzia, 2011
+19. Sahara Hotnights, “Alright Alright) Here’s My Fist Where’s the Fight),” Jennie Bomb, RCA, 2001
+20. Ghost, “Elizabeth,” Opus Eponymous, Rise Above, 2011
+21. First Aid Kit, “Emmylou,” The Lion’s Roar, Redeye, 2012
+22. Andi Almqvist, “Low Dive Jenny,” Red Room Stories, Rootsy, 2007
+23.  Little Dragon, “Ritual Union,” Ritual Union, Peacefrog, 2011
+24. Atoms for Peace, “Default,” Amok, XL Recordings, 2013
+25. Atoms for Peace, “Judge, Jury and Executioner,” Amok, XL Recordings, 2013
+26. Betty Davis, “If I’m in Luck I Might Get Picked Up,” Betty Davis, Just Sunshine Records, 1973
+27. Tommy Tutone, “867-5309/Jenny,” Tommy Tutone 2, Columbia, 1981
+28. Dead Sweaters, “Dangerous,” Dead Sweaters, self-released, 2012
+29. Future Islands, “The Great Fire,” On the Water, Thrill Jockey, 2011
+30. Jimmy Cliff, “You Can Get It If You Really Want,” The Harder They Come, Island, 1972
+31. Bob Marley, “400 Years,” Soul Rebels, Trojan, 1970 00:58:11</textarea>
     </div>
-    <iframe class="_3 column" id="preview" src="preview.html" name="preview_frame" seamless="seamless" width="100%"></iframe>
+    <iframe class="_25 column" id="preview" src="preview.html" name="preview_frame" seamless="seamless" width="100%"></iframe>
   </section> 
   
   <div id="network" class="container"></div>
@@ -83,14 +131,24 @@ This week the dB&#x2019;s, one of genre[power pop]&#x2019;s great tag[underexpos
           tagger.edit(taglist.tags[elem]);
         }
       });
-      
       editor.addEvent('ready', function () {
         var size = window.getComputedStyle(this.field, null).getPropertyValue("line-height");
         var bg = btoa("<svg xmlns='http://www.w3.org/2000/svg' width='"+size+"' height='"+size+"' viewBox='0 0 50 50'><line x1='0' y1='50' x2='50' y2='50' stroke='#9DD1EF' fill='none'/></svg>");
         this.field.style.background = 'transparent url(data:image/svg+xml;base64,'+bg+') repeat 0 1px' ;
         this.field.focus();
+        
+        this.field.value = this.field.value.replace(/([0-9]{1,2}\.)\s*(.+?)\,\s*“?(.+?)”?\,”?\s*(.+?)\,\s*(.+?)\,\s*?([0-9]{4})/gi, "$1 {artist: $2}, \"{track: $3}\", {album: $4}, {label: $5}, {era: $6}");
         findMetadata(this.field.value);
         
+      });
+      
+      var wheight = window.getSize().y;
+      document.id('preview').setStyle('height',  wheight - 120);
+      document.id('notebook').setStyle('height', wheight - 220).addEvent('scroll', function (evt) {
+        var percent = this.getScroll().y / 4125;
+        var body = document.getElementById('preview').contentDocument.body;
+        var bheight = parseInt(window.getComputedStyle(body, null).height);
+        window.frames[0].scroll(0, bheight * percent);
       });
     });
 

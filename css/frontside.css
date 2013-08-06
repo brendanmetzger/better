@@ -20,7 +20,7 @@ p {
 }
 
 img {
-  width:50%;
+  width:95%;
 }
 
 pre {
@@ -38,13 +38,13 @@ h2, h3 {
 h1 {
   font-size:1.5em;
   margin:0.5em 0;
+  padding:0.25em;
   text-align:center;
-  border-bottom:3px double #eee;
+  border:3px double #eee;
 }
 
 p span {
   border-radius:0.25em;
-  padding:0 0.25em;
 }
 .timestamp {
   display:none;
@@ -52,39 +52,58 @@ p span {
 body.highlighted .timestamp {
   color:green;
   display:inline;
+  font-size:0.9em;
+  margin:0;
+  padding:0;
+  vertical-align:top;
 }
 
 body.highlighted .album {
-  background-color:rgba(255,0,0,0.3);
+  background-color:#FDA7A4;
 }
 body.highlighted .artist {
-  background-color:rgba(255,0,255,0.3);
+  background-color:#D8ABDA;
 }
 body.highlighted .name {
-  background-color:rgba(0,255,0,0.3);
+  background-color:#C6E19B;
 }
 body.highlighted .era {
-  background-color:rgba(255,255,0,0.3);
+  background-color:#FBFFB6;
 }
 body.highlighted .label {
-  background-color:rgba(0,0,255,0.3);
+  background-color:#C4C2FD;
 }
 body.highlighted .track {
-  background-color:rgba(0,255,255,0.3);
+  background-color:#FEDAB2;
 }
 body.highlighted .genre {
-  background-color:rgba(0,0,0,0.3);
+  background-color:#A9F394;
 }
 body.highlighted .place {
-  background-color:rgba(130,3,110,0.3);
+  background-color:#A3D1CA;
 }
 body.highlighted .tag {
-  border:1px solid #25B3D3;
+  background-color:#eee;
 }
 
-
+blockquote:before {
+  content:'“';
+  font-size:3em;
+  display:block;
+  line-height:0;
+  margin:0.5em 0 0 -0.5em;
+  vertical-align:bottom;
+}
+blockquote:after {
+  content:'”';
+  font-size:3em;
+  margin:0.5em 0 0 -0.5em;
+  line-height:0;
+  vertical-align:top;
+  display:block;
+}
 blockquote {
-  margin: 1em;
+  margin: 1em 1em 1em 2em;
   font-style:italic;
   font-family:serif;
 }

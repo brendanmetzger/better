@@ -21,13 +21,13 @@ self.addEventListener('message', function(e) {
   var message = e.data;
   message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
           var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
-          return '<em class="timestamp">(@'+seconds+' seconds in)</em>';
+          return '<em class="timestamp">@'+seconds+' seconds in</em>';
         });
   var markdown = '';
   var tags = [];
   var counter = 1;
   var index = new Uint8Array(message.length);
-  markdown += marked(message.replace(/(genre|era|place|album|artist|label|name|tag|track)\[([^[]*)\]/g, function (match, type, tag, position) {
+  markdown += marked(message.replace(/\{(genre|era|place|album|artist|label|name|tag|track)\:\s?([^{]*)\}/g, function (match, type, tag, position) {
     var id = encode(tag, type.slice(0,3));
     var end = (position + type.length + tag.length + 2);
     var range = [position, end];

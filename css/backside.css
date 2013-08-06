@@ -33,6 +33,9 @@ ol, ul {
 ._2 {
   width:20%;
 }
+._25 {
+  width:25%;
+}
 ._3 {
   width:30%;
 }
@@ -107,7 +110,7 @@ textarea {
   font-size:1.65em;
   padding:5px 5% 5px 10%;
   width:85%;
-  height:200em;
+  height:250em;
   font-family:'Century Schoolbook', Century, Times;
   border:none;
   background-attachment: scroll !important;
@@ -119,9 +122,18 @@ textarea {
 
 #network {
   clear:left;
-  box-shadow:0 -0.25em 0.25em rgba(0,0,0,0.1);
-
-  position:relative;
+  position:fixed;
+  height:100px;
+  width:100%;
+  bottom:0;
+  background-color:#fff;
+  box-shadow:0 -0.25em 0.25em rgba(0,0,0,0.1), inset 0 -0.25em 0.25em rgba(0,0,0,0.5);
+}
+#network:hover {
+  height:auto
+}
+#network:hover li {
+  opacity:1;
 }
 #network ul {
   padding:0;
@@ -141,7 +153,9 @@ textarea {
   text-transform:capitalize;
 }
 #network li {
+  opacity:0.2;
   line-height:1em;
+  cursor:pointer;
   display:inline-block;
   border-radius:0.25em;
   padding:0.25em 0.5em 0.35em;
@@ -170,12 +184,14 @@ blockquote {
   display:block;
   margin:0.25em;
   text-align:center;
-  padding:1em 0;
 }
 
 
 #tagger span code {
   opacity:0.2;
+  display:block;
+  padding:0.25em;
+  text-align:left;
 }
 #tagger ul {
   margin:1.5%;
@@ -184,19 +200,33 @@ blockquote {
 }
 
 #tagger ul li {
-  margin:0.25% 0.5%;
+  margin:0 0.5% 0.25em;
   width:30%;
   float:left;
   border-radius:0.25em;
-  padding:1%;
+  padding:0 1%;
   font-size:1.25em;
 }
 
-#tagger ul.graph li {
-  width:47%;
+#tagger ul.graph li:not(.full) {
+  width:auto;
   font-size:1em;
+  position:relative;
+  top:-0.5em;
 }
 
+#tagger li.full {
+  clear:both;
+  float:none !important;
+  text-align:right;
+  width:100% !important;
+  margin:1.5em 0 -1.5em;
+  padding:0.5em 0;
+}
+
+#tagger li.full:not(:first-child) {
+  box-shadow:-0.125em -0.125em 0.5em rgba(0,0,0,0.1);
+}
 /* radio buttons */
 
 input[type="checkbox"],input[type="checkbox"] + label:hover,input[type="radio"] + label:hover {
@@ -221,8 +251,6 @@ input[type="checkbox"],input[type="checkbox"] + label:hover,input[type="radio"] 
   input[type="checkbox"]:not([class]) + label:before,input[type="radio"]:not([class]) + label:before {
     content: '';
     line-height: 1.25em;
-    width: 1em;
-    padding:0 0.5em;
     display: inline-block;
     font-weight: 200 !important;
     color: #333;
@@ -266,28 +294,28 @@ input[type="checkbox"],input[type="checkbox"] + label:hover,input[type="radio"] 
 
 
   .album {
-    background-color:rgba(255,0,0,0.3) !important;
+    background-color:#FDA7A4 !important;
   }
   .artist {
-    background-color:rgba(255,0,255,0.3) !important;
+    background-color:#D8ABDA !important;
   }
   .name {
-    background-color:rgba(0,255,0,0.3) !important;
+    background-color:#C6E19B !important;
   }
   .era {
-    background-color:rgba(255,255,0,0.3) !important;
+    background-color:#FBFFB6 !important;
   }
   .label {
-    background-color:rgba(0,0,255,0.3) !important;
+    background-color:#C4C2FD !important;
   }
   .track {
-    background-color:rgba(0,255,255,0.3) !important;
+    background-color:#FEDAB2 !important;
   }
   .genre {
-    background-color:rgba(0,0,0,0.3) !important;
+    background-color:#A9F394 !important;
   }
   .place {
-    background-color:rgba(130,3,110,0.3) !important;
+    background-color:#A3D1CA !important;
   }
   .tag {
     background-color:#eee !important;

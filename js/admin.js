@@ -1,3 +1,10 @@
+/* someday if there is an auto-tagger, this could find lots of stuff:
+
+-- this would find the playlist according to a regular format
+string.replace(/([0-9]{1,2}\.)\s*?(.+?)\,\s+“?(.+?)\,”?\s*?(.+?)\,\s*?(.+?)\,\s*?([0-9]{4})/gi, $1 {artist: $2}, "{track: $3}", {album: $4}, {label: $5}, {era: $6});
+
+*/
+
 var worker = new Worker('js/parser.js');
 
 var edges = {};
@@ -39,7 +46,10 @@ bootstrap.add(function () {
     var div = new Element('div', {
       'class': '_1 column',
       'html': '<h2>'+key+'s</h2>'
-    }).inject(nw);
+    }).inject(nw).addEvent('click:relay(li)', function (evt, clicked) {
+      var CHANGETHIS = document.id('selection');
+      CHANGETHIS.setSelectionRange(clicked.get('data-start'), clicked.get('data-end'));
+    });
     
     value.node = new Element('ul', {
       'id': key,
@@ -48,7 +58,8 @@ bootstrap.add(function () {
   
   worker.addEventListener('message', function(e) {
     taglist = {index: e.data.index, tags: e.data.tags};
-    document.id('timestamp').set('text', 'Preview last updated: ' + new Date)
+    var update = new Date;
+    document.id('timestamp').set('text', 'Preview last updated: ' + new Date().toLocaleString());
     document.id('preview').contentDocument.body.innerHTML = e.data.markup;
     document.id('statistics').set('text', 'Statistics: {chars} characters, {words} words, {tags} tags'.substitute(e.data.statistics))
     
@@ -60,6 +71,8 @@ bootstrap.add(function () {
       graph[tag.type].node.grab(new Element('li', {
         'draggable': true,
         'class': tag.type,
+        'data-start': tag.range[0]+1,
+        'data-end': tag.range[1]+1,
         'id': tag.id,
         'text': tag.name
       }));
@@ -291,7 +304,7 @@ Ed.tagger = new Class({
     this.tagger = document.id(container);
     this.tag    = {
       node: new Element('span', {
-        html: "<em>select text to tag</em> <code>&rarr;</code>"
+        html: "<em style='padding:1em;display:block;'>select text to tag &rarr;</em>"
       }).inject(this.tagger),
       object: null,
     };
@@ -312,7 +325,7 @@ Ed.tagger = new Class({
     */
     if (! excluded) {
       this.tag.object = {range:range,name:text};
-      this.tag.node.set('html', '<code>&darr; pick[</code>'+text+'<code>]</code>').className = '';
+      this.tag.node.set('html', '<code>{&darr;pick:</code>'+text+'<code>}</code>').className = '';
       this.addSelectionBlock();
     } else {
       this.tag.node.set('html', '<span class="error">'+excluded+'</span>').className = '';
@@ -327,11 +340,11 @@ Ed.tagger = new Class({
       FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1"+input.value+"$2");
     } else {
       var re = RegExp("([^]{" + this.tag.object.range[0] + "})(" + this.tag.object.name + ")([^]*)", 'm');
-      FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1" + input.value + "[$2]$3");
+      FOLDTHISIN.value = FOLDTHISIN.value.replace(re, "$1{" + input.value + ": $2}$3");
     }
     
     this.list.empty();
-    this.tag.node.set('html', '<code>'+input.value+'[</code>'+this.tag.object.name+'<code>]</code>').className = input.value;
+    this.tag.node.set('html', '<code>{'+input.value+':</code>'+this.tag.object.name+'<code>}</code>').className = input.value;
     worker.postMessage(FOLDTHISIN.value);
     this.tag.object.id = encode(this.tag.object.name, input.value.slice(0,3));
     this.tag.object.type = input.value;
@@ -339,7 +352,7 @@ Ed.tagger = new Class({
   },
   edit: function (tag){
     this.tag.object = tag;
-    this.tag.node.set('html', '<code>'+tag.type+'[</code>'+tag.name+'<code>]</code>').className = tag.type;
+    this.tag.node.set('html', '<code>{'+tag.type+':</code>'+tag.name+'<code>}</code>').className = tag.type;
     this.addSelectionBlock(tag.type);
   },
   addSelectionBlock: function (type){
@@ -363,7 +376,7 @@ Ed.tagger = new Class({
     return false;
   },
   updateGraph: function (){
-
+    var previous = null;
     this.graph.empty();
     taglist.tags.sort(function (a, b) {
       if (a.type > b.type) return -1;
@@ -371,6 +384,13 @@ Ed.tagger = new Class({
       return 0;
     }).each(function (tag) {
       if (this.tag.object.type == tag.type) return;
+      if (previous != tag.type) {
+        this.graph.grab(new Element('li', {
+          'class': 'full',
+          'html': tag.type + 's'
+        }));
+      }
+      previous = tag.type;
       this.graph.grab(new Element('li', {
         'class': tag.type
       }).adopt(boxes(tag.name, false, 'checkbox')));
