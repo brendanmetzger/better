@@ -13,8 +13,10 @@ ol, ul {
 }
 
 p {
-  font-size:1.25em;
+  font-size:0.5em;
+  line-height:1.5em;
   text-indent:1em;
+  
 }
 
 img {
@@ -25,9 +27,21 @@ pre {
   font-family:Inconsolata, 'Courier New';
 }
 
-h1, h2, h3 {
+
+h2, h3 {
   margin:0.5em 0;
+  font-size:1.25em;
+  font-weight:200;
+  border-bottom:1px solid #eee;
 }
+
+h1 {
+  font-size:1.5em;
+  margin:0.5em 0;
+  text-align:center;
+  border-bottom:3px double #eee;
+}
+
 p span {
   border-radius:0.25em;
   padding:0 0.25em;
