@@ -56,6 +56,23 @@ body.highlighted .timestamp {
   margin:0;
   padding:0;
   vertical-align:top;
+  cursor:pointer;
+  outline:1px solid #eee;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+button {
+  margin:1em auto;
+}
+tr:nth-child(even) {
+  background-color:#eee;
+}
+td {
+  border:1px solid #f8f8f8;
+  padding:0.25em 0.5em;
 }
 
 body.highlighted .album {

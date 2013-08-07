@@ -18,11 +18,13 @@ function encode(string, prefix) {
 }
 
 self.addEventListener('message', function(e) {
+  
   var message = e.data;
   message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
           var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
-          return '<em class="timestamp">@'+seconds+' seconds in</em>';
+          return '<span class="timestamp" onclick="scrub('+seconds*1000+')"> ▶ '+seconds+' seconds in</span>';
         });
+  message = message.replace(/(http.*?soundcloud\.com\/([a-z]+)\/([0-9]+))/im, "<button onclick='loadSoundcloud(this, \"$1\");return false;'>Preview Soundcloud</button>")
   var markdown = '';
   var tags = [];
   var counter = 1;

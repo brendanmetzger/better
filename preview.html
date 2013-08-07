@@ -4,6 +4,34 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Prevew</title>
     <link rel="stylesheet" href="css/frontside.css" type="text/css" media="screen" charset="utf-8"/>
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
+    <script src="https://w.soundcloud.com/player/api.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      var player;
+      function loadSoundcloud(replace_node, track_url) {
+        event.stopPropagation();
+        var div = document.createElement('div');
+        replace_node.parentNode.replaceChild(div, replace_node);
+        
+        SC.oEmbed(track_url, { auto_play: true }, function(oEmbed) {
+          div.innerHTML = oEmbed.html;
+        });
+        setTimeout(function () {
+          var frame = document.getElementsByTagName('iframe')[0];
+          player = SC.Widget(frame);
+        }, 1000);
+      }
+      function scrub(timestamp) {
+        event.stopPropagation();
+      
+        if (!player) {
+          alert('you need to add a player, or toggle its embed mode');
+          return;
+        }
+        player.seekTo(timestamp);
+        
+      }
+    </script>
   </head>
   <body class="highlighted" onclick="this.className = this.className == '' ? this.className = 'highlighted' : ''">
     <h1>Preview</h1>

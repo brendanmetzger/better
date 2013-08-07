@@ -19,11 +19,13 @@
     window.onload = window.bootstrap.load;
     // ]]>
   </script>
+  
   </head>
   <body>
   <section id="toolbar" class="container">
     <div class="_25 column">
       <p>Welcome, User</p>
+      <div id="test"></div>
     </div>
     <div class="_5 column">
       <p><em id="statistics">Statistics</em></p>
@@ -32,6 +34,7 @@
       <p><time id="timestamp">Preview</time></p>
     </div>
   </section>
+
   <section class="container">
     <div class="_25 column">
       <div id="tagger"></div>
@@ -50,9 +53,11 @@
     <div id="notebook" class="_5 column">
       <textarea id="selection" class="editing" spellcheck="false"># Show 379 3.1.2013
 
+http://api.soundcloud.com/tracks/103602823
+
 ![swedish flag](http://www.soundopinions.org/images/2013/swedishrock.jpg)
 
-## Stefan Wermelin
+## Stefan Wermelin 00:10:01
 For as long as we can recall, the music industry story has been a sad one. But perhaps, there’s a happy ending? It has taken 13 years, but music revenues are finally up, albeit by 3%. But that’s still cause for celebration. Looks like digital music has been a big boost to the record biz, with its contribution to 30% of sales. And who was selling? Well, no surprises here: {artist: Adele} and {artist: Carly Rae Jepsen} are the reigning queens.
 
 ## Record Industry Stuff
@@ -137,7 +142,7 @@ Featured Songs
         this.field.style.background = 'transparent url(data:image/svg+xml;base64,'+bg+') repeat 0 1px' ;
         this.field.focus();
         
-        this.field.value = this.field.value.replace(/([0-9]{1,2}\.)\s*(.+?)\,\s*“?(.+?)”?\,”?\s*(.+?)\,\s*(.+?)\,\s*?([0-9]{4})/gi, "$1 {artist: $2}, \"{track: $3}\", {album: $4}, {label: $5}, {era: $6}");
+        // this.field.value = this.field.value.replace(/([0-9]{1,2}\.)\s*(.+?)\,\s*“?(.+?)”?\,”?\s*(.+?)\,\s*(.+?)\,\s*?([0-9]{4})/gi, "$1 {artist: $2}, \"{track: $3}\", {album: $4}, {label: $5}, {era: $6}");
         findMetadata(this.field.value);
         
       });
