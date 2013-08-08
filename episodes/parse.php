@@ -1,6 +1,11 @@
 <?php
   echo '<pre>';
-$content = json_decode(file_get_contents('../serializedContent.json'));
+
+$idx = isset($_GET['sheet']) ? $_GET['sheet'] : 1;
+$file = realpath("../../../content/Sheet{$idx}.csv.json");
+
+$content = json_decode(file_get_contents($file));
+
 
 foreach ($content as $episode) {
   $file = trim(preg_replace('/[^0-9]/', '-', $episode->Show .'_' . $episode->Date), '-') . '.md';
@@ -22,6 +27,9 @@ foreach ($content as $episode) {
   // Videos
   $output .= $episode->Videos ? $episode->Videos . "\n" : '';
   
+  // Flickr
+  $output .= $episode->FlickrPhotoSet ? $episode->FlickrPhotoSet . "\n" : '';
+  
   // Guests
   if ($episode->Guests) {
     $output .= "\n## Guests\n";
@@ -37,7 +45,7 @@ foreach ($content as $episode) {
   // ShowNotes
   
   $output .= "\n## News\n";
-  $output .= "{$episode->ShowNotes}\n";
+  $output .= iconv('UTF-8', 'ASCII//TRANSLIT', $episode->ShowNotes)."\n";
   // Recurringsegments
   
   if ($episode->Recurringsegments) {
@@ -53,7 +61,8 @@ foreach ($content as $episode) {
   foreach ($results[0] as $key => $value) {
     $output .= sprintf("%d. %s", ($key + 1), $value);
   }
-  print_r($output);
+  // print_r($output);
+  echo "{$file}\n\n";
   file_put_contents($file, $output);
 }
 
