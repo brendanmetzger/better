@@ -26,8 +26,37 @@
     <div class="_25 column">
       <select name="episode_selector" id="episode_selector" class="menu">
         <option selected="selected">Select Show</option>
-        <option value="episodes/401-08-02-2013.md">Show #401: 08.02.13</option>
-        <option value="episodes/400-07-26-2013.md">Show #400: 07.26.13</option>
+        <option value='episodes/401-08-02-2013.md'>Show 401 08-02-2013</option>
+        <option value='episodes/400-07-26-2013.md'>Show 400 07-26-2013</option>
+        <option value='episodes/379-3-1-2013.md'>Show 379 3-1-2013</option>
+        <option value='episodes/378-2-22-2013.md'>Show 378 2-22-2013</option>
+        <option value='episodes/377-2-15-2013.md'>Show 377 2-15-2013</option>
+        <option value='episodes/376-2-8-2013.md'>Show 376 2-8-2013</option>
+        <option value='episodes/375-2-1-2013.md'>Show 375 2-1-2013</option>
+        <option value='episodes/374-1-25-2013.md'>Show 374 1-25-2013</option>
+        <option value='episodes/373-1-18-2013.md'>Show 373 1-18-2013</option>
+        <option value='episodes/372-1-11-2013.md'>Show 372 1-11-2013</option>
+        <option value='episodes/371-1-4-2013.md'>Show 371 1-4-2013</option>
+        <option value='episodes/370-12-28-2012.md'>Show 370 12-28-2012</option>
+        <option value='episodes/369-12-21-2012.md'>Show 369 12-21-2012</option>
+        <option value='episodes/368-12-14-2012.md'>Show 368 12-14-2012</option>
+        <option value='episodes/367-12-7-2012.md'>Show 367 12-7-2012</option>
+        <option value='episodes/366-11-30-2012.md'>Show 366 11-30-2012</option>
+        <option value='episodes/365-11-23-2012.md'>Show 365 11-23-2012</option>
+        <option value='episodes/364-11-16-2012.md'>Show 364 11-16-2012</option>
+        <option value='episodes/363-11-09-2012.md'>Show 363 11-09-2012</option>
+        <option value='episodes/362-11-02-2012.md'>Show 362 11-02-2012</option>
+        <option value='episodes/361-10-26-2012.md'>Show 361 10-26-2012</option>
+        <option value='episodes/360-10-19-2012.md'>Show 360 10-19-2012</option>
+        <option value='episodes/359-10-12-2012.md'>Show 359 10-12-2012</option>
+        <option value='episodes/358-10-5-2012.md'>Show 358 10-5-2012</option>
+        <option value='episodes/357-9-28-2012.md'>Show 357 9-28-2012</option>
+        <option value='episodes/356-9-21-2012.md'>Show 356 9-21-2012</option>
+        <option value='episodes/355-9-14-2012.md'>Show 355 9-14-2012</option>
+        <option value='episodes/354-9-7-2012.md'>Show 354 9-7-2012</option>
+        <option value='episodes/353-8-31-2012.md'>Show 353 8-31-2012</option>
+        <option value='episodes/352-8-24-2012.md'>Show 352 8-24-2012</option>
+        <option value='episodes/351-8-17-2012.md'>Show 351 8-17-2012</option>
       </select>
       <button id="save" class="menu">Save</button>
       <div id="test"></div>
@@ -68,7 +97,13 @@
     
     bootstrap.add(function () {
       
-
+      new Request({
+        url: 'episodes/fetch.php',
+        onSuccess: function (response) {
+          console.log('episodes');
+        }
+      }).get();
+      
       var tagger = new Ed.tagger('tagger');
       var editor = new Ed.it('selection');
       
@@ -81,6 +116,7 @@
           }
         }).get({nocache: Date.now()});
         editor.field.focus();
+        document.id('notebook').scrollTo(0,0);
       });
       
       document.id('save').addEvent('click', function (evt) {
@@ -136,32 +172,9 @@
       });
     });
 
-
-    /*
-
-  
-  selects_cursor.addEventListener('keyup', function (evt) {
-    var startCursor = this.selectionStart;
-    switch (evt.keyCode) {
-      case 13:
-        // enter key, will be tricky
-        if (this.selectionStart != this.selectionEnd) {
-          var endCursor = this.selectionEnd;
-          var selected = this.value.substring(startCursor, endCursor);
-          var endIdx  = this.value.length - endCursor;
-          var re = new RegExp("([^]{"+startCursor+"})("+selected+")([^]{"+endIdx+"})", 'm');
-          this.value = this.value.replace(re, "$1 REPLACE_ME[$2]$3");
-        
-          this.setSelectionRange(startCursor + 1, endCursor+11 - selected.length);
-        }
-        break;
+    function findMetadata(value) {
+      var preview = worker.postMessage(value);
     }
-
-  });
-  */
-  function findMetadata(value) {
-    var preview = worker.postMessage(value);
-  }
   //]]>
   </script>
   </body>
