@@ -16,7 +16,6 @@ button {
   background-color:#fff;
   border-radius:1em;
   padding:0.25em 0.5em;
-  color:#333 !important;
   cursor:pointer;
   margin:0.125em;
 }
@@ -89,7 +88,7 @@ dd {
   box-shadow:0 0.125em 1em 0 rgba(0,0,0,0.05);
 }
 
-#toolbar * {
+#toolbar *:not(.menu) {
   color:#fff;
 }
 
@@ -126,11 +125,13 @@ textarea {
   height:100px;
   width:100%;
   bottom:0;
+  padding-bottom:1em;
   background-color:#fff;
   box-shadow:0 -0.25em 0.25em rgba(0,0,0,0.1), inset 0 -0.25em 0.25em rgba(0,0,0,0.5);
 }
 #network:hover {
-  height:auto
+  height:auto;
+  min-height:100px;
 }
 #network:hover li {
   opacity:1;
@@ -163,19 +164,11 @@ textarea {
 }
 
 
-
-
-
 blockquote {
   margin: 1em;
   font-style:italic;
   font-family:serif;
 }
-
-
-
-
-
 
 
 #tagger span {
@@ -233,7 +226,6 @@ input[type="checkbox"],input[type="checkbox"] + label:hover,input[type="radio"] 
     cursor: pointer;
     text-shadow:0 0 1em #fff;
   }
-
 
   input[type="checkbox"] + label,input[type="radio"] + label {
     display: inline;

@@ -35,6 +35,11 @@ h2, h3 {
   border-bottom:1px solid #eee;
 }
 
+h3 {
+  font-size:1em;
+  margin:inherit 1em;
+}
+
 h1 {
   font-size:1.5em;
   margin:0.5em 0;
@@ -63,11 +68,12 @@ body.highlighted .timestamp {
 table {
   width:100%;
   border-collapse:collapse;
+  margin:1em 0;
 }
 button {
   margin:1em auto;
 }
-tr:nth-child(even) {
+thead tr {
   background-color:#eee;
 }
 td {

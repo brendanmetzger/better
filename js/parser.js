@@ -20,16 +20,13 @@ function encode(string, prefix) {
 self.addEventListener('message', function(e) {
   
   var message = e.data;
-  message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
-          var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
-          return '<span class="timestamp" onclick="scrub('+seconds*1000+')"> ▶ '+seconds+' seconds in</span>';
-        });
-  message = message.replace(/(http.*?soundcloud\.com\/([a-z]+)\/([0-9]+))/im, "<button onclick='loadSoundcloud(this, \"$1\");return false;'>Preview Soundcloud</button>")
   var markdown = '';
   var tags = [];
   var counter = 1;
   var index = new Uint8Array(message.length);
-  markdown += marked(message.replace(/\{(genre|era|place|album|artist|label|name|tag|track)\:\s?([^{]*)\}/g, function (match, type, tag, position) {
+  
+  // alway do tagging first - it relies heavily on placement of cursor, and creates an index of the spot of each tag, which is important for the interface.
+  message = message.replace(/\{(genre|era|place|album|artist|label|name|tag|track)\:\s?([^{]*)\}/g, function (match, type, tag, position) {
     var id = encode(tag, type.slice(0,3));
     var end = (position + type.length + tag.length + 2);
     var range = [position, end];
@@ -39,7 +36,15 @@ self.addEventListener('message', function(e) {
     tags[counter] = {type: type, name: tag, id: id, range: range};
     counter++;
     return '<span rel="'+id+'" class="'+type+'" data-begin="'+position+'" data-end="'+ end +'">'+tag+'</span>'
-  }));
+  });
+  
+  message = message.replace(/(\d\d)\:(\d\d)\:(\d\d)/gm, function (match, hrs, min, sec) {
+          var seconds = (parseInt(hrs) * 3600) + (parseInt(min) * 60) + parseInt(sec);
+          return '<span class="timestamp" onclick="scrub('+seconds*1000+')"> ▶ '+seconds+' seconds in</span>';
+        });
+  message = message.replace(/(http.*?soundcloud\.com\/([a-z]+)\/([0-9]+))/im, "<button onclick='loadSoundcloud(this, \"$1\");return false;'>Preview Soundcloud</button>")
+  
+  markdown += marked(message);
   
   var stats = {
     words: e.data.split(/\s/).length,

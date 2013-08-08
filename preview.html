@@ -25,12 +25,26 @@
         event.stopPropagation();
       
         if (!player) {
-          alert('you need to add a player, or toggle its embed mode');
+          alert('you need to add a player, or click the button to embed it');
           return;
         }
         player.seekTo(timestamp);
-        
       }
+      
+      window.onload = function () {
+        console.log('iniatializing preview');
+        document.body.addEventListener('click', function (evt) {
+          console.log(evt, this);
+          var elem = evt.srcElement;
+          if (elem.nodeName.toLowerCase() == 'a') {
+            window.open(elem.href);
+          } else if (elem.nodeName.toLowerCase() == 'img') {
+            evt.preventDefault();
+            evt.stopPropagation();
+            console.log(elem, evt);
+          }
+        }, false);
+      };
     </script>
   </head>
   <body class="highlighted" onclick="this.className = this.className == '' ? this.className = 'highlighted' : ''">

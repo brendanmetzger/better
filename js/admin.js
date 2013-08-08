@@ -58,7 +58,6 @@ bootstrap.add(function () {
   
   worker.addEventListener('message', function(e) {
     taglist = {index: e.data.index, tags: e.data.tags};
-    var update = new Date;
     document.id('timestamp').set('text', 'Preview last updated: ' + new Date().toLocaleString());
     document.id('preview').contentDocument.body.innerHTML = e.data.markup;
     document.id('statistics').set('text', 'Statistics: {chars} characters, {words} words, {tags} tags'.substitute(e.data.statistics))
