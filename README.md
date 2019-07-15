@@ -1,7 +1,7 @@
 better
 ======
 
-*this is temporarily abondoned, but the idea came to fruition came true some time ago at the computer internet website representing the [Sound Opinions](http://soundopinions.org) radio show*
+*this is temporarily abandoned, but the idea came to fruition came true some time ago at the computer internet website representing the [Sound Opinions](http://soundopinions.org) radio show*
 
 ## Proposed Solutions for "text" database
 
